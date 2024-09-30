@@ -1,24 +1,28 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { fetchItems } from '../api';  // Import only fetchItems
 
-const items = [
-  { id: 1, name: 'Medicine A', status: 'Approved' },
-  { id: 2, name: 'Consumable B', status: 'Rejected' },
-  { id: 3, name: 'Medicine C', status: 'Pending' },
-];
+const ItemList = () => {
+    const [items, setItems] = useState([]);
 
-const ItemList = ({ setSelectedItem }) => {
-  return (
-    <div className="item-list">
-      <h3>Items Received</h3>
-      <ul>
-        {items.map(item => (
-          <li key={item.id} onClick={() => setSelectedItem(item)}>
-            {item.name} - {item.status}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+    useEffect(() => {
+        const getItems = async () => {
+            const fetchedItems = await fetchItems();
+            setItems(fetchedItems);
+        };
+
+        getItems();
+    }, []);
+
+    return (
+        <div>
+            <h1>Items</h1>
+            <ul>
+                {items.map(item => (
+                    <li key={item.id}>{item.name}: ${item.price}</li>
+                ))}
+            </ul>
+        </div>
+    );
 };
 
 export default ItemList;
