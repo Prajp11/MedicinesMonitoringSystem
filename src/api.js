@@ -2,6 +2,7 @@ import axios from 'axios';
 
 const api = axios.create({
   baseURL: 'http://127.0.0.1:8000/api', // Your backend URL
+  timeout: 10000,  // Optional timeout
 });
 
 // Handle login to get JWT tokens
@@ -35,6 +36,11 @@ export const refreshToken = async () => {
 // Fetch items with token authentication
 export const fetchItems = async () => {
   const token = localStorage.getItem('accessToken');
+  if (!token) {
+    console.error('No access token found');
+    throw new Error('No access token found');
+  }
+  
   try {
     const response = await api.get('/items', {
       headers: {
@@ -43,7 +49,13 @@ export const fetchItems = async () => {
     });
     return response.data;
   } catch (error) {
-    console.error('Error fetching items:', error);
+    if (error.response) {
+      console.error('Server responded with an error:', error.response.data);
+    } else if (error.request) {
+      console.error('No response received from server:', error.request);
+    } else {
+      console.error('Error setting up the request:', error.message);
+    }
     throw error;
   }
 };
