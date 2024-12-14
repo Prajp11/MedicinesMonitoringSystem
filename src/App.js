@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';  // Add 'Navigate'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'; // Add 'Navigate'
 import Home from './components/Home';
 import Dashboard from './components/Dashboard';
-import ItemList from './components/ItemList';  // Importing ItemList
+import ItemList from './components/ItemList'; // Importing ItemList
 import ItemDetails from './components/ItemDetails';
 import About from './components/About';
 import Login from './components/Login';
@@ -16,29 +16,90 @@ import Settings from './components/Settings'; // New component
 import Contact from './components/Contact'; // Import Contact component
 import './App.css';
 
+// Protected Route Wrapper
+const ProtectedRoute = ({ loggedIn, children }) => {
+  return loggedIn ? children : <Navigate to="/login" />;
+};
+
 function App() {
-  const [loggedIn, setLoggedIn] = useState(false);  // State for login
+  const [loggedIn, setLoggedIn] = useState(false); // State for login
 
   return (
     <Router>
       <div className="app-container">
         <NavBar />
         <Routes>
-          {/* Public routes */}
+          {/* Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} /> {/* Added Contact route */}
+          <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login setLoggedIn={setLoggedIn} />} />
 
-          {/* Protected routes */}
-          <Route path="/dashboard" element={loggedIn ? <Dashboard /> : <Navigate to="/login" />} />  {/* Redirect to login if not logged in */}
-          <Route path="/items" element={loggedIn ? <ItemList /> : <Navigate to="/login" />} />  {/* Redirect to login if not logged in */}
-          <Route path="/item/:id" element={loggedIn ? <ItemDetails /> : <Navigate to="/login" />} />  {/* Redirect to login if not logged in */}
-          <Route path="/quality-check" element={loggedIn ? <QualityCheck /> : <Navigate to="/login" />} />
-          <Route path="/reports" element={loggedIn ? <Reports /> : <Navigate to="/login" />} />
-          <Route path="/notifications" element={loggedIn ? <Notifications /> : <Navigate to="/login" />} />
-          <Route path="/approval-dashboard" element={loggedIn ? <ApprovalDashboard /> : <Navigate to="/login" />} />
-          <Route path="/settings" element={loggedIn ? <Settings /> : <Navigate to="/login" />} />
+          {/* Protected Routes */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute loggedIn={loggedIn}>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/items"
+            element={
+              <ProtectedRoute loggedIn={loggedIn}>
+                <ItemList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/item/:id"
+            element={
+              <ProtectedRoute loggedIn={loggedIn}>
+                <ItemDetails />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/quality-check"
+            element={
+              <ProtectedRoute loggedIn={loggedIn}>
+                <QualityCheck />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reports"
+            element={
+              <ProtectedRoute loggedIn={loggedIn}>
+                <Reports />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/notifications"
+            element={
+              <ProtectedRoute loggedIn={loggedIn}>
+                <Notifications />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/approval-dashboard"
+            element={
+              <ProtectedRoute loggedIn={loggedIn}>
+                <ApprovalDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute loggedIn={loggedIn}>
+                <Settings />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
         <Footer />
       </div>

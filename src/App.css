@@ -695,3 +695,26 @@ textarea {
       align-items: flex-start;
   }
 }
+
+.item-details-container {
+  padding: 20px;
+  margin: 20px;
+  background-color: #f4f4f9;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.item-details-container h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.item-details-container p {
+  font-size: 16px;
+  margin: 8px 0;
+}
+
+.item-details-container strong {
+  color: #555;
+}

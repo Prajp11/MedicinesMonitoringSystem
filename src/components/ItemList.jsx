@@ -1,50 +1,49 @@
 import React, { useEffect, useState } from 'react';
 
 const ItemList = () => {
-    const [items, setItems] = useState([]);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [newItem, setNewItem] = useState({
-        name: '',
-        batch_number: '',
-        quality_status: ''
-    });
+    const [items, setItems] = useState([]); // Store items fetched from the backend
+    const [searchQuery, setSearchQuery] = useState(''); // Store the search query
+    const [newItem, setNewItem] = useState({ name: '', batch_number: '', quality_status: '' }); // For new item
 
+    // Fetch items from the backend
     useEffect(() => {
         const fetchItems = async () => {
-            const token = localStorage.getItem('accessToken');
+            const token = localStorage.getItem('accessToken'); // JWT token from localStorage
             if (!token) {
                 console.error("No access token found");
                 return;
             }
 
-            const queryParam = searchQuery ? `?q=${encodeURIComponent(searchQuery)}` : '';
+            const queryParam = searchQuery ? `?search=${encodeURIComponent(searchQuery)}` : ''; // Query for searching
 
             try {
                 const response = await fetch(`http://127.0.0.1:8000/api/items/${queryParam}`, {
                     headers: {
-                        'Authorization': `Bearer ${token}`,
+                        'Authorization': `Bearer ${token}`, // Authorization header
                     },
                 });
 
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    throw new Error('Failed to fetch items');
                 }
 
                 const data = await response.json();
-                setItems(data);
+                setItems(data); // Update the items state
             } catch (error) {
                 console.error('Error fetching items:', error);
             }
         };
 
         fetchItems();
-    }, [searchQuery]);
+    }, [searchQuery]); // Refetch when searchQuery changes
 
+    // Handle input changes for the new item form
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setNewItem({ ...newItem, [name]: value });
     };
 
+    // Add a new item
     const handleAddItem = async (e) => {
         e.preventDefault();
         const token = localStorage.getItem('accessToken');
@@ -64,17 +63,18 @@ const ItemList = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                throw new Error('Failed to add item');
             }
 
             const data = await response.json();
-            setItems([...items, data]);
-            setNewItem({ name: '', batch_number: '', quality_status: '' });
+            setItems([...items, data]); // Append the new item to the list
+            setNewItem({ name: '', batch_number: '', quality_status: '' }); // Reset form
         } catch (error) {
             console.error('Error adding item:', error);
         }
     };
 
+    // Remove an item
     const handleRemoveItem = async (id) => {
         const token = localStorage.getItem('accessToken');
         if (!token) {
@@ -91,10 +91,10 @@ const ItemList = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                throw new Error('Failed to remove item');
             }
 
-            setItems(items.filter(item => item.id !== id));
+            setItems(items.filter(item => item.id !== id)); // Remove the item locally
         } catch (error) {
             console.error('Error removing item:', error);
         }
@@ -102,20 +102,20 @@ const ItemList = () => {
 
     return (
         <div className="itemlist-container">
-            <h1 className="itemlist-title">Medicine Stock</h1>
+            <h1 className="itemlist-title">Medicine Stock Management</h1>
 
             {/* Search bar */}
             <input
                 type="text"
-                placeholder="Search medicine..."
+                placeholder="Search medicines by name, batch, or status..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => setSearchQuery(e.target.value)} // Update the search query
                 className="itemlist-searchBar"
             />
 
             {/* Add new item form */}
             <form onSubmit={handleAddItem} className="itemlist-form">
-                <h2>Add New Item</h2>
+                <h2>Add New Medicine</h2>
                 <input
                     type="text"
                     name="name"
@@ -143,14 +143,18 @@ const ItemList = () => {
                     className="itemlist-formInput"
                     required
                 />
-                <button type="submit" className="itemlist-submitButton">Add Item</button>
+                <button type="submit" className="itemlist-submitButton">Add Medicine</button>
             </form>
 
-            {/* Item list */}
+            {/* List of items */}
             <ul className="itemlist-itemList">
                 {items.map(item => (
                     <li key={item.id} className="itemlist-item">
-                        <p className="itemlist-itemText">{item.name} - Batch: {item.batch_number} - Status: {item.quality_status}</p>
+                        <p className="itemlist-itemText">
+                            <strong>Name:</strong> {item.name}<br />
+                            <strong>Batch:</strong> {item.batch_number}<br />
+                            <strong>Status:</strong> {item.quality_status}
+                        </p>
                         <button onClick={() => handleRemoveItem(item.id)} className="itemlist-removeButton">Remove</button>
                     </li>
                 ))}
