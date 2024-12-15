@@ -1,79 +1,54 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 const ItemDetails = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(false);
+    const [item, setItem] = useState(null);
+    const { id } = useParams(); // Get the item ID from the URL
 
-  // Fetch items from the backend when search query changes
-  useEffect(() => {
-    if (!searchQuery.trim()) {
-      setItems([]);  // Clear results if search is empty
-      return;
-    }
+    useEffect(() => {
+        const fetchItem = async () => {
+            const token = localStorage.getItem('accessToken');
+            if (!token) {
+                console.error("No access token found");
+                return;
+            }
 
-    const fetchItems = async () => {
-      const token = localStorage.getItem('accessToken');
-      if (!token) {
-        console.error("No access token found");
-        return;
-      }
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/api/items/${id}/`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,  // Include token in header
+                    },
+                });
 
-      try {
-        setLoading(true);
-        const response = await fetch(`http://127.0.0.1:8000/api/items/?search=${encodeURIComponent(searchQuery)}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch items');
-        }
+                const data = await response.json();
+                setItem(data);
+            } catch (error) {
+                console.error('Error fetching item:', error);
+            }
+        };
 
-        const data = await response.json();
-        setItems(data);  // Set the fetched items
-      } catch (error) {
-        console.error('Error fetching items:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+        fetchItem();
+    }, [id]);
 
-    fetchItems();
-  }, [searchQuery]);
-
-  return (
-    <div className="item-details-container">
-      <h1>Medicine Stock - Search Results</h1>
-
-      {/* Search bar */}
-      <input
-        type="text"
-        placeholder="Search for medicine..."
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}  // Update search query on input change
-        className="search-bar"
-      />
-
-      {loading && <p>Loading...</p>}
-
-      {/* Display search results */}
-      {items.length > 0 ? (
-        <ul className="item-list">
-          {items.map((item) => (
-            <li key={item.id} className="item-list-item">
-              <p><strong>Name:</strong> {item.name}</p>
-              <p><strong>Batch Number:</strong> {item.batch_number}</p>
-              <p><strong>Status:</strong> {item.quality_status}</p>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>No medicines found.</p>
-      )}
-    </div>
-  );
+    return (
+        <div>
+            <h1>Item Details</h1>
+            {item ? (
+                <div>
+                    <p>Name: {item.name}</p>
+                    <p>Batch Number: {item.batch_number}</p>
+                    <p>Quality Status: {item.quality_status}</p>
+                    {/* Display other item details here */}
+                </div>
+            ) : (
+                <p>Loading...</p>
+            )}
+        </div>
+    );
 };
 
 export default ItemDetails;

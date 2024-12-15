@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'; // Add 'Navigate'
 import Home from './components/Home';
 import Dashboard from './components/Dashboard';
@@ -23,6 +23,14 @@ const ProtectedRoute = ({ loggedIn, children }) => {
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false); // State for login
+
+  // Check if the user is logged in on page load
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      setLoggedIn(true);
+    }
+  }, []);
 
   return (
     <Router>
