@@ -2,19 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Home from './components/Home';
 import Dashboard from './components/Dashboard';
-import ItemList from './components/ItemList'; // Importing ItemList
+import ItemList from './components/ItemList'; // Add ItemList component for viewing items and adding new items
 import ItemDetails from './components/ItemDetails';
-import SearchResult from './components/SearchResult'; // Importing SearchResult component
+import SearchResult from './components/SearchResult'; // Search result for searching items
 import About from './components/About';
-import Login from './components/Login';
-import Footer from './components/Footer';
-import NavBar from './components/NavBar';
-import QualityCheck from './components/QualityCheck';
-import Reports from './components/Reports';
-import Notifications from './components/Notifications';
-import ApprovalDashboard from './components/ApprovalDashboard';
-import Settings from './components/Settings';
-import Contact from './components/Contact'; // Importing Contact component
+import Login from './components/Login'; // Login page
+import Footer from './components/Footer'; // Footer
+import NavBar from './components/NavBar'; // NavBar
+import QualityCheck from './components/QualityCheck'; // Quality check component
+import Reports from './components/Reports'; // Reports component
+import Notifications from './components/Notifications'; // Notifications component
+import ApprovalDashboard from './components/ApprovalDashboard'; // Approval dashboard
+import Settings from './components/Settings'; // Settings page
+import Contact from './components/Contact'; // Contact page
 import './App.css';
 
 // Protected Route Wrapper
@@ -23,7 +23,7 @@ const ProtectedRoute = ({ loggedIn, children }) => {
 };
 
 function App() {
-  const [loggedIn, setLoggedIn] = useState(false); // State for login
+  const [loggedIn, setLoggedIn] = useState(false);
 
   // Check if the user is logged in on page load
   useEffect(() => {
@@ -57,7 +57,7 @@ function App() {
             path="/items"
             element={
               <ProtectedRoute loggedIn={loggedIn}>
-                <ItemList />
+                <ItemList /> {/* Page where we list and add medicines */}
               </ProtectedRoute>
             }
           />
@@ -65,7 +65,7 @@ function App() {
             path="/item/:id"
             element={
               <ProtectedRoute loggedIn={loggedIn}>
-                <ItemDetails />
+                <ItemDetails /> {/* Page to view details of a single item */}
               </ProtectedRoute>
             }
           />
@@ -109,8 +109,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-          
-          {/* Add the route for SearchResult */}
           <Route
             path="/search-result"
             element={

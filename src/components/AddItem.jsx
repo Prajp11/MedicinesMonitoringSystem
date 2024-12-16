@@ -1,45 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
-const ItemList = () => {
-  const [items, setItems] = useState([]); // List of medicines
+const AddItem = ({ onMedicineAdded }) => {
   const [newItem, setNewItem] = useState({
     name: '',
     batch_number: '',
-    accepted_or_rejected: '',
+    accepted_or_rejected: ''
   });
+
   const [message, setMessage] = useState(''); // Success or error message
 
-  // Fetch existing items
-  useEffect(() => {
-    const fetchItems = async () => {
-      const token = localStorage.getItem('accessToken');
-      if (!token) {
-        console.error('No access token found');
-        return;
-      }
-
-      try {
-        const response = await fetch('http://127.0.0.1:8000/api/items/', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch items.');
-        }
-
-        const data = await response.json();
-        setItems(data);
-      } catch (error) {
-        console.error('Error fetching items:', error);
-      }
-    };
-
-    fetchItems();
-  }, []);
-
-  // Handle form input changes
+  // Handle input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewItem({ ...newItem, [name]: value });
@@ -48,7 +18,7 @@ const ItemList = () => {
   // Handle form submission
   const handleAddItem = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem('accessToken'); // Get token from localStorage
 
     if (!token) {
       setMessage('No access token found. Please log in.');
@@ -70,7 +40,7 @@ const ItemList = () => {
       }
 
       const addedItem = await response.json();
-      setItems([...items, addedItem]); // Add new item to the list
+      onMedicineAdded(addedItem); // Notify parent component
       setNewItem({ name: '', batch_number: '', accepted_or_rejected: '' }); // Reset form
       setMessage('Medicine added successfully!');
     } catch (error) {
@@ -81,9 +51,7 @@ const ItemList = () => {
 
   return (
     <div>
-      <h1>Medicine List</h1>
-
-      {/* Form to add a new medicine */}
+      <h2>Add Medicine</h2>
       <form onSubmit={handleAddItem}>
         <div>
           <label>Medicine Name:</label>
@@ -108,34 +76,21 @@ const ItemList = () => {
           />
         </div>
         <div>
-          <label>Status (Accepted/Rejected):</label>
+          <label>Accepted or Rejected:</label>
           <input
             type="text"
             name="accepted_or_rejected"
             value={newItem.accepted_or_rejected}
             onChange={handleInputChange}
-            placeholder="Accepted/Rejected"
+            placeholder="Enter status (Accepted/Rejected)"
             required
           />
         </div>
-        <button type="submit">Add Medicine</button>
+        <button type="submit">Submit</button>
       </form>
-
-      {message && <p>{message}</p>} {/* Success/Error Message */}
-
-      {/* Display existing medicines */}
-      <ul>
-        {items.map((item) => (
-          <li key={item.id}>
-            <p>
-              {item.name} - Batch: {item.batch_number} - Status:{' '}
-              {item.accepted_or_rejected}
-            </p>
-          </li>
-        ))}
-      </ul>
+      {message && <p>{message}</p>}
     </div>
   );
 };
 
-export default ItemList;
+export default AddItem;
