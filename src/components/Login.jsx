@@ -17,6 +17,8 @@ const Login = ({ setLoggedIn }) => {
     // Check if username and password match the hardcoded values
     if (username === validUsername && password === validPassword) {
       setLoggedIn(true);  // Set the loggedIn state to true
+      localStorage.setItem('accessToken', 'dummyAccessToken');  // Set dummy token for simplicity
+      localStorage.setItem('refreshToken', 'dummyRefreshToken'); // Set dummy refresh token
       navigate('/dashboard');  // Redirect to the dashboard
     } else {
       setError('Invalid username or password');

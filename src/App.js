@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'; // Add 'Navigate'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Home from './components/Home';
 import Dashboard from './components/Dashboard';
 import ItemList from './components/ItemList'; // Importing ItemList
 import ItemDetails from './components/ItemDetails';
+import SearchResult from './components/SearchResult'; // Importing SearchResult component
 import About from './components/About';
 import Login from './components/Login';
 import Footer from './components/Footer';
 import NavBar from './components/NavBar';
-import QualityCheck from './components/QualityCheck'; // New component
-import Reports from './components/Reports'; // New component
-import Notifications from './components/Notifications'; // New component
-import ApprovalDashboard from './components/ApprovalDashboard'; // New component
-import Settings from './components/Settings'; // New component
-import Contact from './components/Contact'; // Import Contact component
+import QualityCheck from './components/QualityCheck';
+import Reports from './components/Reports';
+import Notifications from './components/Notifications';
+import ApprovalDashboard from './components/ApprovalDashboard';
+import Settings from './components/Settings';
+import Contact from './components/Contact'; // Importing Contact component
 import './App.css';
 
 // Protected Route Wrapper
@@ -105,6 +106,16 @@ function App() {
             element={
               <ProtectedRoute loggedIn={loggedIn}>
                 <Settings />
+              </ProtectedRoute>
+            }
+          />
+          
+          {/* Add the route for SearchResult */}
+          <Route
+            path="/search-result"
+            element={
+              <ProtectedRoute loggedIn={loggedIn}>
+                <SearchResult />
               </ProtectedRoute>
             }
           />
