@@ -131,7 +131,7 @@
 
 
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Home from './components/Home';
 import Dashboard from './components/Dashboard';
 import ItemList from './components/ItemList';
@@ -143,6 +143,7 @@ import Footer from './components/Footer';
 import NavBar from './components/NavBar';
 import Contact from './components/Contact';
 import DeleteMedicine from './components/DeleteMedicine';
+import UpdateMedicine from './components/UpdateMedicine'; 
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import './App.css';
 
@@ -207,6 +208,10 @@ function App() {
               </ProtectedRoute>
             }
           />
+           <Route
+            path="/update-medicine"
+            element={loggedIn ? <UpdateMedicine /> : <Navigate to="/login" />}
+          /> 
         </Routes>
         <Footer />
       </div>

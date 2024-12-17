@@ -22,6 +22,7 @@ const NavBar = ({ setLoggedIn }) => {
         <li><Link to="/dashboard">Dashboard</Link></li>
         <li><Link to="/items">Items</Link></li>
         <li><Link to="/delete-medicine">Delete Medicine</Link></li>
+        <li><Link to="/update-medicine">Update Medicine</Link></li> {/* New route for Update Medicine */}
         <li><Link to="/about">About Us</Link></li>
         <li><Link to="/contact">Contact Us</Link></li> {/* Contact Us link */}
         
