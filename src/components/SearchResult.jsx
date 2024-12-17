@@ -5,13 +5,16 @@ const SearchResult = () => {
     const [results, setResults] = useState([]);
     const location = useLocation();
 
-    const query = new URLSearchParams(location.search).get('query'); // Extract search query
+    // Extract the 'query' parameter from the URL search
+    const query = new URLSearchParams(location.search).get('query'); 
 
     useEffect(() => {
-        fetchSearchResults();
-    }, [query]);
+        if (query) {
+            fetchSearchResults(query);
+        }
+    }, [query]);  // Re-run when query changes
 
-    const fetchSearchResults = async () => {
+    const fetchSearchResults = async (query) => {
         const token = localStorage.getItem('accessToken');
         if (!token) {
             console.error("No access token found");
@@ -24,11 +27,13 @@ const SearchResult = () => {
                     'Authorization': `Bearer ${token}`,
                 },
             });
+
             if (!response.ok) {
                 throw new Error('Failed to fetch search results');
             }
+
             const data = await response.json();
-            setResults(data);
+            setResults(data);  // Update the state with the fetched results
         } catch (error) {
             console.error('Error fetching search results:', error);
         }
@@ -37,13 +42,17 @@ const SearchResult = () => {
     return (
         <div className="search-results-container">
             <h1>Search Results</h1>
-            <ul className="search-results-list">
-                {results.map((result) => (
-                    <li key={result.id}>
-                        <p>{result.name} - Batch: {result.batch_number} - Status: {result.quality_status}</p>
-                    </li>
-                ))}
-            </ul>
+            {results.length === 0 ? (
+                <p>No results found for "{query}".</p>
+            ) : (
+                <ul className="search-results-list">
+                    {results.map((result) => (
+                        <li key={result.id}>
+                            <p>{result.name} - Batch: {result.batch_number} - Status: {result.accepted_or_rejected}</p>
+                        </li>
+                    ))}
+                </ul>
+            )}
         </div>
     );
 };

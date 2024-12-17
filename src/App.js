@@ -36,7 +36,9 @@ function App() {
   return (
     <Router>
       <div className="app-container">
-        <NavBar />
+        {/* Pass setLoggedIn as a prop to NavBar */}
+        <NavBar setLoggedIn={setLoggedIn} />
+
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
@@ -118,6 +120,7 @@ function App() {
             }
           />
         </Routes>
+
         <Footer />
       </div>
     </Router>
