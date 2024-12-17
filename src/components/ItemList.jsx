@@ -20,14 +20,10 @@ const ItemList = () => {
 
       try {
         const response = await fetch('http://127.0.0.1:8000/api/items/', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch items.');
-        }
+        if (!response.ok) throw new Error('Failed to fetch items.');
 
         const data = await response.json();
         setItems(data);
@@ -65,13 +61,11 @@ const ItemList = () => {
         body: JSON.stringify(newItem),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to add medicine.');
-      }
+      if (!response.ok) throw new Error('Failed to add medicine.');
 
       const addedItem = await response.json();
-      setItems([...items, addedItem]); // Add new item to the list
-      setNewItem({ name: '', batch_number: '', accepted_or_rejected: '' }); // Reset form
+      setItems([...items, addedItem]);
+      setNewItem({ name: '', batch_number: '', accepted_or_rejected: '' });
       setMessage('Medicine added successfully!');
     } catch (error) {
       console.error('Error adding medicine:', error);
@@ -80,60 +74,78 @@ const ItemList = () => {
   };
 
   return (
-    <div>
-      <h1>Medicine List</h1>
+    <div className="container">
+      <h1 className="title">Medicine List</h1>
 
       {/* Form to add a new medicine */}
-      <form onSubmit={handleAddItem}>
-        <div>
-          <label>Medicine Name:</label>
+      <form className="form" onSubmit={handleAddItem}>
+        <div className="input-group">
+          <label className="label">Medicine Name:</label>
           <input
             type="text"
             name="name"
             value={newItem.name}
             onChange={handleInputChange}
+            className="input"
             placeholder="Enter medicine name"
             required
           />
         </div>
-        <div>
-          <label>Batch Number:</label>
+        <div className="input-group">
+          <label className="label">Batch Number:</label>
           <input
             type="text"
             name="batch_number"
             value={newItem.batch_number}
             onChange={handleInputChange}
+            className="input"
             placeholder="Enter batch number"
             required
           />
         </div>
-        <div>
-          <label>Status (Accepted/Rejected):</label>
+        <div className="input-group">
+          <label className="label">Status (Accepted/Rejected):</label>
           <input
             type="text"
             name="accepted_or_rejected"
             value={newItem.accepted_or_rejected}
             onChange={handleInputChange}
+            className="input"
             placeholder="Accepted/Rejected"
             required
           />
         </div>
-        <button type="submit">Add Medicine</button>
+        <button type="submit" className="button">
+          Add Medicine
+        </button>
       </form>
 
-      {message && <p>{message}</p>} {/* Success/Error Message */}
+      {message && (
+        <p className={`message ${message.includes('Error') ? 'error' : ''}`}>
+          {message}
+        </p>
+      )}
 
       {/* Display existing medicines */}
-      <ul>
-        {items.map((item) => (
-          <li key={item.id}>
-            <p>
-              {item.name} - Batch: {item.batch_number} - Status:{' '}
-              {item.accepted_or_rejected}
-            </p>
-          </li>
-        ))}
-      </ul>
+      <ul className="medicine-list">
+  {items.map((item) => (
+    <li key={item.id} className="medicine-item">
+      <span className="medicine-name">
+        {item.name} - Batch: {item.batch_number}
+      </span>
+      <span
+        className={`medicine-status ${
+          item.accepted_or_rejected.toLowerCase() === 'accepted'
+            ? 'accepted'
+            : 'rejected'
+        }`}
+      >
+        {item.accepted_or_rejected}
+      </span>
+    </li>
+  ))}
+</ul>
+
     </div>
   );
 };
