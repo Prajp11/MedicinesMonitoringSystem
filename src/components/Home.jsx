@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import autoqualitycheck from '../Images/autoqualitycheck.jpg';
 import dashboard from '../Images/dashboard.png';
-import mllearn from '../Images/mllearn.jpg';
+import mllearn from '../Images/mllearn.png';
 import realtimedata from '../Images/realtimedata.png';
 import useraccess from '../Images/useraccess.png';
-import inventory from '../Images/inventory.png';
+import inventory from '../Images/inventory.jpg';
 
 const features = [
   {

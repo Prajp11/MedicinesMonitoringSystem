@@ -23,13 +23,13 @@ const About = () => {
               {/* Front of the card */}
               <div className="flip-card-front">
                 <img src={automatedImg} alt="Automated Testing" className="feature-img" />
-                <h3>Automated Testing</h3>
+                <h3>Automated Management</h3>
               </div>
               {/* Back of the card */}
               <div className="flip-card-back">
                 <FaFlask className="icon" />
-                <h3>Automated Testing</h3>
-                <p>Automated tests ensure that only the best quality products are approved.</p>
+                <h3>Automated Management</h3>
+                <p>Automated management ensure that only the best quality products are approved.</p>
               </div>
             </div>
           </div>

@@ -29,84 +29,148 @@
   border-radius: 5px;
 }
 
-/* Homepage styles */
-
+/* General styles for the homepage */
 .home-container {
-  text-align: center;
   padding: 20px;
+  font-family: 'Arial', sans-serif;
+  text-align: center;
+  background-color: #f9f9f9;
+  color: #333;
 }
 
+.home-container h1 {
+  font-size: 2.5em;
+  margin-bottom: 10px;
+  color: #2c3e50;
+}
+
+.home-container p {
+  font-size: 1.2em;
+  margin-bottom: 20px;
+}
+
+/* Card layout for key features */
 .card-container {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* Three cards per row */
-  gap: 20px; /* Adds space between the cards */
-  margin-top: 40px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  justify-items: center;
+  margin-top: 20px;
 }
 
 .feature-card {
-  background-color: #f8f9fa;
+  background-color: #fff;
+  border: 1px solid #ddd;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s, background-color 0.3s;
-  padding: 20px;
-  text-align: left;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .feature-card:hover {
   transform: translateY(-10px);
-  background-color: #e0f7fa; /* Changes background color on hover */
-}
-
-.feature-card:hover:nth-child(odd) {
-  background-color: #d1c4e9; /* Different color for odd cards */
-}
-
-.feature-card:hover:nth-child(even) {
-  background-color: #ffcdd2; /* Different color for even cards */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 .feature-img {
   width: 100%;
-  border-radius: 8px;
-  margin-bottom: 15px;
+  height: auto;
+  object-fit: contain;
 }
 
 .feature-title {
-  font-size: 1.2rem;
-  margin-bottom: 10px;
-  color: #333;
+  font-size: 1.5em;
+  margin: 15px 0;
+  color: #34495e;
 }
 
 .feature-info {
-  font-size: 1rem;
-  color: #666;
+  padding: 0 15px 15px;
+  font-size: 1em;
+  color: #555;
+  text-align: left;
 }
 
-.login-button {
+/* FAQ Section */
+.faq-section {
   margin-top: 40px;
-  padding: 10px 20px;
-  font-size: 1.2rem;
-  background-color: #007bff;
-  color: white;
+  text-align: left;
+}
+
+.faq-section h2 {
+  font-size: 2em;
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
+
+.faq-card {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+  padding: 15px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.faq-card:hover {
+  background-color: #f1f1f1;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.faq-card.open {
+  background-color: #eef6fd;
+}
+
+.faq-question {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #34495e;
+}
+
+.faq-answer {
+  font-size: 1em;
+  margin-top: 10px;
+  color: #555;
+}
+
+.arrow {
+  transition: transform 0.3s ease;
+}
+
+.arrow.open {
+  transform: rotate(180deg);
+}
+
+/* Login Button */
+.login-button {
+  background-color: #3498db;
+  color: #fff;
   border: none;
   border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 1.2em;
   cursor: pointer;
+  margin-top: 20px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .login-button:hover {
-  background-color: #0056b3;
+  background-color: #2980b9;
+  transform: scale(1.05);
 }
 
-/* Responsive design: when screen width is smaller, adjust the number of columns */
-@media (max-width: 1024px) {
-  .card-container {
-    grid-template-columns: repeat(2, 1fr); /* 2 cards per row on medium-sized screens */
-  }
-}
-
+/* Media Queries for Responsiveness */
 @media (max-width: 768px) {
   .card-container {
-    grid-template-columns: 1fr; /* 1 card per row on small-sized screens */
+    grid-template-columns: 1fr;
+  }
+
+  .faq-question {
+    font-size: 1.1em;
   }
 }
 
