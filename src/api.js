@@ -1,9 +1,82 @@
 import axios from 'axios';
 
+// Base API URL - Django REST Framework
+const API_BASE_URL = 'http://localhost:8000/api';
+
+// Authentication endpoints
+const AUTH_URLS = {
+    login: `${API_BASE_URL}/token/`,
+    refresh: `${API_BASE_URL}/token/refresh/`,
+    logout: `${API_BASE_URL}/auth/logout/`,
+};
+
+// API endpoints
+const API_ENDPOINTS = {
+    items: `${API_BASE_URL}/items/`,
+    byStatus: `${API_BASE_URL}/items/by_status/`,
+    expiryReport: `${API_BASE_URL}/items/expiry_report/`,
+    expiryStats: `${API_BASE_URL}/items/expiry_stats/`,
+};
+
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:8000/api', // Backend API base URL
-  timeout: 10000, // Optional timeout
+  baseURL: API_BASE_URL,
+  timeout: 15000,
+  headers: {
+    'Content-Type': 'application/json',
+  }
 });
+
+// Add request interceptor to attach token to every request
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// Add response interceptor to handle token refresh
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    // If error is 401 and we haven't retried yet
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        const refreshToken = localStorage.getItem('refreshToken');
+        if (!refreshToken) {
+          throw new Error('No refresh token available');
+        }
+
+        // Try to refresh the token
+        const response = await axios.post(AUTH_URLS.refresh, {
+          refresh: refreshToken
+        });
+
+        const { access } = response.data;
+        localStorage.setItem('accessToken', access);
+
+        // Retry the original request with new token
+        originalRequest.headers.Authorization = `Bearer ${access}`;
+        return axios(originalRequest);
+      } catch (refreshError) {
+        // If refresh fails, clear tokens and redirect to login
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        window.location.href = '/login';
+        return Promise.reject(refreshError);
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
 
 // Helper function to attach the Authorization header
 const getAuthHeader = () => {
@@ -14,30 +87,29 @@ const getAuthHeader = () => {
 // Handle login to get JWT tokens
 export const login = async (username, password) => {
   try {
-    // For demo purposes, simulate API call with hardcoded credentials
-    if (username === 'Prajwalp11' && password === 'Prajwal@123') {
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Return a dummy JWT token
-      const dummyToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6IlByYWp3YWxwMTEiLCJleHAiOjE3NDAyMjU2MDB9.dummy_signature';
-      return dummyToken;
-    } else {
-      // Simulate authentication error
-      throw new Error('Invalid credentials');
+    console.log('Attempting login to:', AUTH_URLS.login);
+    const response = await axios.post(AUTH_URLS.login, { 
+      username, 
+      password 
+    });
+    
+    const { access, refresh } = response.data;
+    
+    if (!access) {
+      throw new Error('No access token received from server');
     }
     
-    // Original backend code (commented out for demo):
-    /*
-    const response = await api.post('/token/', { username, password });
-    const { access, refresh } = response.data;
-    localStorage.setItem('accessToken', access); // Store the tokens
-    localStorage.setItem('refreshToken', refresh);
-    return access; // Return the access token
-    */
+    // Store tokens in localStorage
+    localStorage.setItem('accessToken', access);
+    if (refresh) {
+      localStorage.setItem('refreshToken', refresh);
+    }
+    
+    console.log('✓ Login successful, tokens stored');
+    return access;
   } catch (error) {
-    console.error('Login error:', error);
-    throw error; // Throw error to be caught in the component
+    console.error('Login error:', error.response?.data || error.message);
+    throw error;
   }
 };
 

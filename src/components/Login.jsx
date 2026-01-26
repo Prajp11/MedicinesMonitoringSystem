@@ -29,32 +29,26 @@ const Login = ({ setLoggedIn }) => {
     setLoading(true);
     setError('');
 
-    // Simulate loading delay
-    setTimeout(async () => {
-      // Check if username and password match
-      if (username === validUsername && password === validPassword) {
-        try {
-          // Get JWT token (dummy login function used for now)
-          const accessToken = await login(username, password);
+    try {
+      // Call the backend API for authentication
+      const accessToken = await login(username, password);
 
-          // Set logged-in state
-          setLoggedIn(true);
-          setIsLoggedIn(true);
+      if (accessToken) {
+        // Set logged-in state
+        setLoggedIn(true);
+        setIsLoggedIn(true);
 
-          // Store tokens in localStorage
-          localStorage.setItem('accessToken', accessToken);
-          localStorage.setItem('refreshToken', 'dummyRefreshToken');
-
-          // Redirect to dashboard
-          navigate('/dashboard');
-        } catch (error) {
-          setError('Invalid username or password');
-        }
+        // Redirect to dashboard
+        navigate('/dashboard');
       } else {
-        setError('Invalid username or password');
+        setError('Login failed. Please check your credentials.');
       }
+    } catch (error) {
+      console.error('Login error:', error);
+      setError(error.response?.data?.detail || error.message || 'Invalid username or password. Please try again.');
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   // Handle Logout

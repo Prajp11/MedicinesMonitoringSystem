@@ -12,26 +12,80 @@ const ItemList = () => {
   const [isLoading, setIsLoading] = useState(false); // Loading state for better UX
   const [showFullList, setShowFullList] = useState(false); // State to toggle full list visibility
 
-  // Fetch existing items
+  // Fetch existing items from API
   useEffect(() => {
     const fetchItems = async () => {
       const token = localStorage.getItem('accessToken');
       if (!token) {
-        console.error('No access token found');
+        console.error('No access token found. Please log in.');
+        setMessage('Please log in to view medicines.');
         return;
       }
 
       try {
-        const response = await fetch('http://127.0.0.1:8000/api/items/', {
-          headers: { Authorization: `Bearer ${token}` },
+        const endpoint = 'http://localhost:8000/api/items/';
+        const response = await fetch(endpoint, {
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
         });
 
-        if (!response.ok) throw new Error('Failed to fetch items.');
+        if (response.status === 401) {
+          // Token is invalid or expired, try to refresh
+          const refreshToken = localStorage.getItem('refreshToken');
+          if (refreshToken) {
+            try {
+              const refreshResponse = await fetch('http://localhost:8000/api/token/refresh/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ refresh: refreshToken }),
+              });
+
+              if (refreshResponse.ok) {
+                const { access } = await refreshResponse.json();
+                localStorage.setItem('accessToken', access);
+                
+                // Retry fetching items with new token
+                const retryResponse = await fetch(endpoint, {
+                  headers: { 
+                    'Authorization': `Bearer ${access}`,
+                    'Content-Type': 'application/json',
+                  },
+                });
+
+                if (retryResponse.ok) {
+                  const data = await retryResponse.json();
+                  setItems(data);
+                  console.log(`Successfully fetched ${data.length} medicines`);
+                  return;
+                }
+              }
+            } catch (refreshError) {
+              console.error('Token refresh failed:', refreshError);
+            }
+          }
+          
+          // If refresh failed, clear tokens and redirect to login
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+          setMessage('Session expired. Please log in again.');
+          setTimeout(() => window.location.href = '/login', 2000);
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
         const data = await response.json();
         setItems(data);
+        console.log(`Successfully fetched ${data.length} medicines from backend`);
+
       } catch (error) {
         console.error('Error fetching items:', error);
+        setMessage(`Error fetching medicines: ${error.message}. Please check your backend connection.`);
+        setTimeout(() => setMessage(''), 5000);
       }
     };
 
@@ -47,7 +101,7 @@ const ItemList = () => {
   // Handle form submission
   const handleAddItem = async (e) => {
     e.preventDefault();
-    setIsLoading(true); // Start loading
+    setIsLoading(true);
     const token = localStorage.getItem('accessToken');
 
     if (!token) {
@@ -57,39 +111,94 @@ const ItemList = () => {
     }
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/items/', {
+      const endpoint = 'http://localhost:8000/api/items/';
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(newItem),
       });
 
-      if (!response.ok) throw new Error('Failed to add medicine.');
+      if (response.status === 401) {
+        // Token expired, try to refresh
+        const refreshToken = localStorage.getItem('refreshToken');
+        if (refreshToken) {
+          const refreshResponse = await fetch('http://localhost:8000/api/token/refresh/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ refresh: refreshToken }),
+          });
+
+          if (refreshResponse.ok) {
+            const { access } = await refreshResponse.json();
+            localStorage.setItem('accessToken', access);
+            
+            // Retry adding item with new token
+            const retryResponse = await fetch(endpoint, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${access}`,
+              },
+              body: JSON.stringify(newItem),
+            });
+
+            if (retryResponse.ok) {
+              const addedItem = await retryResponse.json();
+              setItems(prevItems => [addedItem, ...prevItems]);
+              setNewItem({ name: '', batch_number: '', accepted_or_rejected: '' });
+              setMessage('Medicine added successfully!');
+              setTimeout(() => setMessage(''), 3000);
+              setIsLoading(false);
+              return;
+            }
+          }
+        }
+        
+        // If refresh failed
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        setMessage('Session expired. Please log in again.');
+        setTimeout(() => window.location.href = '/login', 2000);
+        setIsLoading(false);
+        return;
+      }
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
+      }
 
       const addedItem = await response.json();
-      // Add new item at the beginning of the array (newest first)
       setItems(prevItems => [addedItem, ...prevItems]);
       setNewItem({ name: '', batch_number: '', accepted_or_rejected: '' });
       setMessage('Medicine added successfully!');
+      console.log('Successfully added medicine');
       
-      // Clear success message after 3 seconds
       setTimeout(() => setMessage(''), 3000);
     } catch (error) {
       console.error('Error adding medicine:', error);
-      setMessage('Error adding medicine.');
-      
-      // Clear error message after 3 seconds
+      setMessage(`Error adding medicine: ${error.message}`);
       setTimeout(() => setMessage(''), 3000);
     } finally {
-      setIsLoading(false); // End loading
+      setIsLoading(false);
     }
   };
 
   // Calculate summary statistics
   const acceptedMedicines = items.filter(item => item.accepted_or_rejected.toLowerCase() === 'accepted');
   const rejectedMedicines = items.filter(item => item.accepted_or_rejected.toLowerCase() === 'rejected');
+
+  // Function to clear localStorage (for demo purposes only)
+  const clearLocalStorage = () => {
+    if (window.confirm('Clear local storage? This will only affect demo data, not your database.')) {
+      localStorage.removeItem('medicineItems');
+      setMessage('Local storage cleared. Reload to fetch from database.');
+      setTimeout(() => setMessage(''), 3000);
+    }
+  };
 
   return (
     <div className="medicine-container">
@@ -272,6 +381,16 @@ const ItemList = () => {
               {showFullList ? '↑' : '↓'}
             </span>
           </button>
+          
+          {items.length > 0 && (
+            <button 
+              className="clear-all-button"
+              onClick={clearLocalStorage}
+            >
+              <span className="button-icon">🗑️</span>
+              Clear Demo Data
+            </button>
+          )}
         </div>
       </div>
 
