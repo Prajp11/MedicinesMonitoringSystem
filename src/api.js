@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Base API URL - Django REST Framework
-const API_BASE_URL = 'http://localhost:8000/api';
+export const API_BASE_URL = 'http://localhost:8000/api';
 
 // Authentication endpoints
 const AUTH_URLS = {
@@ -11,7 +11,7 @@ const AUTH_URLS = {
 };
 
 // API endpoints
-const API_ENDPOINTS = {
+export const API_ENDPOINTS = {
     items: `${API_BASE_URL}/items/`,
     byStatus: `${API_BASE_URL}/items/by_status/`,
     expiryReport: `${API_BASE_URL}/items/expiry_report/`,
