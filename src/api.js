@@ -14,11 +14,27 @@ const getAuthHeader = () => {
 // Handle login to get JWT tokens
 export const login = async (username, password) => {
   try {
+    // For demo purposes, simulate API call with hardcoded credentials
+    if (username === 'Prajwalp11' && password === 'Prajwal@123') {
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Return a dummy JWT token
+      const dummyToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6IlByYWp3YWxwMTEiLCJleHAiOjE3NDAyMjU2MDB9.dummy_signature';
+      return dummyToken;
+    } else {
+      // Simulate authentication error
+      throw new Error('Invalid credentials');
+    }
+    
+    // Original backend code (commented out for demo):
+    /*
     const response = await api.post('/token/', { username, password });
     const { access, refresh } = response.data;
     localStorage.setItem('accessToken', access); // Store the tokens
     localStorage.setItem('refreshToken', refresh);
     return access; // Return the access token
+    */
   } catch (error) {
     console.error('Login error:', error);
     throw error; // Throw error to be caught in the component

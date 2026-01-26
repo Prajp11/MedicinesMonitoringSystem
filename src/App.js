@@ -8,7 +8,7 @@ import SearchResult from './components/SearchResult';
 import About from './components/About';
 import Login from './components/Login';
 import Footer from './components/Footer';
-import NavBar, { ThemeProvider } from './components/NavBar';
+import NavBar from './components/NavBar';
 import Contact from './components/Contact';
 import DeleteMedicine from './components/DeleteMedicine';
 import UpdateMedicine from './components/UpdateMedicine'; 
@@ -26,10 +26,9 @@ function App() {
   }, []);
 
   return (
-    <ThemeProvider>
-      <Router>
-        <div className="app-container">
-          <NavBar setLoggedIn={setLoggedIn} />
+    <Router>
+      <div className="app-container">
+        <NavBar setLoggedIn={setLoggedIn} />
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
@@ -89,7 +88,6 @@ function App() {
         <Footer />
       </div>
     </Router>
-  </ThemeProvider>
   );
 }
 
