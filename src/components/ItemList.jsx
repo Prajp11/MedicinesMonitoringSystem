@@ -13,6 +13,9 @@ const ItemList = () => {
   const [message, setMessage] = useState(''); // Success or error message
   const [isLoading, setIsLoading] = useState(false); // Loading state for better UX
   const [showFullList, setShowFullList] = useState(false); // State to toggle full list visibility
+  const [uploadFile, setUploadFile] = useState(null); // CSV file for upload
+  const [uploadProgress, setUploadProgress] = useState(''); // Upload status message
+  const [isUploading, setIsUploading] = useState(false); // Upload loading state
 
   // Fetch existing items from API
   useEffect(() => {
@@ -148,6 +151,105 @@ const ItemList = () => {
     }
   };
 
+  // Download CSV Template
+  const handleDownloadTemplate = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/api/csv-template/');
+      
+      if (!response.ok) {
+        throw new Error('Failed to download template');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'medicine_template.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      
+      setUploadProgress('✅ Template downloaded successfully!');
+      setTimeout(() => setUploadProgress(''), 3000);
+    } catch (error) {
+      console.error('Error downloading template:', error);
+      setUploadProgress('❌ Failed to download template. Please try again.');
+      setTimeout(() => setUploadProgress(''), 3000);
+    }
+  };
+
+  // Handle file selection
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.type !== 'text/csv' && !file.name.endsWith('.csv')) {
+        setUploadProgress('❌ Please select a valid CSV file');
+        setTimeout(() => setUploadProgress(''), 3000);
+        return;
+      }
+      setUploadFile(file);
+      setUploadProgress(`📄 Selected: ${file.name}`);
+    }
+  };
+
+  // Upload CSV File
+  const handleUploadCSV = async () => {
+    if (!uploadFile) {
+      setUploadProgress('❌ Please select a CSV file first');
+      setTimeout(() => setUploadProgress(''), 3000);
+      return;
+    }
+
+    setIsUploading(true);
+    const token = localStorage.getItem('accessToken');
+
+    if (!token) {
+      setUploadProgress('❌ No access token found. Please log in.');
+      setIsUploading(false);
+      setTimeout(() => setUploadProgress(''), 3000);
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append('file', uploadFile);
+
+      const response = await fetch('http://localhost:8000/api/bulk-upload/', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Upload failed');
+      }
+
+      const result = await response.json();
+      
+      // Show success message
+      setUploadProgress(`✅ Successfully created ${result.created} medicines!`);
+      
+      // Refresh items list
+      window.location.reload();
+      
+      // Reset file input
+      setUploadFile(null);
+      const fileInput = document.getElementById('csv-file-input');
+      if (fileInput) fileInput.value = '';
+      
+    } catch (error) {
+      console.error('Error uploading CSV:', error);
+      setUploadProgress(`❌ Upload failed: ${error.message}`);
+    } finally {
+      setIsUploading(false);
+      setTimeout(() => setUploadProgress(''), 5000);
+    }
+  };
+
   // Handle form submission
   const handleAddItem = async (e) => {
     e.preventDefault();
@@ -259,6 +361,70 @@ const ItemList = () => {
           Medicine Inventory Management
         </h1>
         <p className="medicine-subtitle">Add and manage your pharmaceutical inventory</p>
+      </div>
+
+      {/* Bulk Upload Section */}
+      <div className="bulk-upload-section">
+        <div className="bulk-upload-card">
+          <div className="bulk-upload-header">
+            <div className="bulk-header-content">
+              <h3 className="bulk-title">📥 Bulk Upload Medicines</h3>
+              <p className="bulk-subtitle">Upload multiple medicines at once using CSV file</p>
+            </div>
+          </div>
+          
+          <div className="bulk-upload-body">
+            <div className="bulk-actions">
+              <button 
+                type="button"
+                onClick={handleDownloadTemplate}
+                className="template-download-btn"
+              >
+                <span className="btn-icon">📄</span>
+                Download CSV Template
+              </button>
+              
+              <div className="file-upload-group">
+                <label htmlFor="csv-file-input" className="file-upload-label">
+                  <span className="btn-icon">📁</span>
+                  {uploadFile ? uploadFile.name : 'Choose CSV File'}
+                </label>
+                <input
+                  id="csv-file-input"
+                  type="file"
+                  accept=".csv"
+                  onChange={handleFileChange}
+                  className="file-input-hidden"
+                />
+                
+                <button
+                  type="button"
+                  onClick={handleUploadCSV}
+                  disabled={!uploadFile || isUploading}
+                  className={`upload-btn ${!uploadFile || isUploading ? 'disabled' : ''}`}
+                >
+                  {isUploading ? (
+                    <>
+                      <span className="loading-spinner-small"></span>
+                      Uploading...
+                    </>
+                  ) : (
+                    <>
+                      <span className="btn-icon">⬆️</span>
+                      Upload CSV
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+            
+            {uploadProgress && (
+              <div className={`upload-progress-message ${uploadProgress.includes('❌') ? 'error' : 'success'}`}>
+                {uploadProgress}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Enhanced form with card layout */}

@@ -12,7 +12,9 @@ import Footer from './components/Footer';
 import NavBar from './components/NavBar';
 import Contact from './components/Contact';
 import DeleteMedicine from './components/DeleteMedicine';
-import UpdateMedicine from './components/UpdateMedicine'; 
+import UpdateMedicine from './components/UpdateMedicine';
+import QualityScoreDashboard from './components/QualityScoreDashboard';
+import AcceptanceStatsDashboard from './components/AcceptanceStatsDashboard';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import './App.css';
 import Chatbot from './components/Chatbot';
@@ -85,7 +87,23 @@ function App() {
            <Route
             path="/update-medicine"
             element={loggedIn ? <UpdateMedicine /> : <Navigate to="/login" />}
-          /> 
+          />
+          <Route
+            path="/quality-scores"
+            element={
+              <ProtectedRoute loggedIn={loggedIn}>
+                <QualityScoreDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/acceptance-stats"
+            element={
+              <ProtectedRoute loggedIn={loggedIn}>
+                <AcceptanceStatsDashboard />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
         <Footer />
       </div>

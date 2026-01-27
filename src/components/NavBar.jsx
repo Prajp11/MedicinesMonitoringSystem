@@ -78,34 +78,14 @@ const NavBar = ({ setLoggedIn }) => {
               </Link>
             </li>
             
-            {isLoggedIn ? (
-              <>
-                <li className="nav-item">
-                  <Link to="/dashboard" className="nav-link" onClick={closeMobileMenu}>
-                    <span className="nav-icon">📊</span>
-                    Dashboard
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link to="/items" className="nav-link" onClick={closeMobileMenu}>
-                    <span className="nav-icon">📋</span>
-                    Items
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link to="/delete-medicine" className="nav-link" onClick={closeMobileMenu}>
-                    <span className="nav-icon">🗑️</span>
-                    Delete Medicine
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link to="/update-medicine" className="nav-link" onClick={closeMobileMenu}>
-                    <span className="nav-icon">✏️</span>
-                    Update Medicine
-                  </Link>
-                </li>
-              </>
-            ) : null}
+            {isLoggedIn && (
+              <li className="nav-item">
+                <Link to="/dashboard" className="nav-link" onClick={closeMobileMenu}>
+                  <span className="nav-icon">📊</span>
+                  Dashboard
+                </Link>
+              </li>
+            )}
             
             <li className="nav-item">
               <Link to="/about" className="nav-link" onClick={closeMobileMenu}>
