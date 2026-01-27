@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import VoiceInput from './VoiceInput';
+import { parseVoiceCommand, formatParsedData } from '../utils/voiceParser';
 // Enhanced styles are now in App.css - Premium UI design with modern aesthetics
 
 const ItemList = () => {
@@ -117,6 +119,33 @@ const ItemList = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewItem({ ...newItem, [name]: value });
+  };
+
+  // Handle voice input
+  const handleVoiceInput = (transcript) => {
+    const parsedData = parseVoiceCommand(transcript);
+    
+    // Map parsed data to form fields
+    const updatedItem = { ...newItem };
+    
+    if (parsedData.medicine_name) {
+      updatedItem.name = parsedData.medicine_name;
+    }
+    if (parsedData.batch_number) {
+      updatedItem.batch_number = parsedData.batch_number;
+    }
+    if (parsedData.quality_status) {
+      updatedItem.accepted_or_rejected = parsedData.quality_status;
+    }
+    
+    setNewItem(updatedItem);
+    
+    // Show feedback message
+    const summary = formatParsedData(parsedData);
+    if (summary !== 'No data recognized') {
+      setMessage(`Voice input captured: ${summary}`);
+      setTimeout(() => setMessage(''), 5000);
+    }
   };
 
   // Handle form submission
@@ -238,6 +267,13 @@ const ItemList = () => {
           <h2 className="form-title">Add New Medicine</h2>
           <p className="form-description">Enter medicine details to add to inventory</p>
         </div>
+        
+        {/* Voice Input Component */}
+        <VoiceInput 
+          onVoiceData={handleVoiceInput}
+          placeholder="Click to add medicine by voice"
+          showTranscript={true}
+        />
         
         <form className="enhanced-form" onSubmit={handleAddItem}>
           <div className="form-grid">

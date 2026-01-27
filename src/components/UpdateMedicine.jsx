@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import VoiceInput from './VoiceInput';
+import { parseVoiceCommand, formatParsedData } from '../utils/voiceParser';
 
 const UpdateMedicine = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -18,6 +20,28 @@ const UpdateMedicine = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setUpdatedDetails({ ...updatedDetails, [name]: value });
+  };
+
+  // Handle voice input for updates
+  const handleVoiceInput = (transcript) => {
+    const parsedData = parseVoiceCommand(transcript);
+    
+    // Update status if mentioned in voice command
+    if (parsedData.quality_status) {
+      setUpdatedDetails({ ...updatedDetails, accepted_or_rejected: parsedData.quality_status });
+    }
+    
+    // Update search query if medicine name mentioned
+    if (parsedData.medicine_name) {
+      setSearchQuery(parsedData.medicine_name);
+    }
+    
+    // Show feedback
+    const summary = formatParsedData(parsedData);
+    if (summary !== 'No data recognized') {
+      setMessage(`Voice input captured: ${summary}`);
+      setTimeout(() => setMessage(''), 5000);
+    }
   };
 
   // Handle Medicine Search
@@ -115,6 +139,12 @@ const UpdateMedicine = () => {
 
       {/* Search Form */}
       <form onSubmit={handleSearchMedicine} className="search-form">
+        <VoiceInput 
+          onVoiceData={handleVoiceInput}
+          placeholder="Search medicine by voice"
+          showTranscript={true}
+        />
+        
         <div>
           <label>Search Medicine by Name:</label>
           <input

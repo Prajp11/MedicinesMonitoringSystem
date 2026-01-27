@@ -13196,3 +13196,261 @@ button:hover {
     display: none;
   }
 }
+
+/* ===== VOICE INPUT STYLES ===== */
+
+/* Voice Input Container */
+.voice-input-container {
+  margin: 20px 0;
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+  border-radius: 12px;
+  border: 2px dashed rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+}
+
+.voice-input-container:hover {
+  border-color: rgba(102, 126, 234, 0.5);
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+}
+
+/* Voice Controls */
+.voice-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Voice Button */
+.voice-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.voice-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.voice-button:active {
+  transform: translateY(0);
+}
+
+.voice-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Listening State */
+.voice-button.listening {
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+  animation: pulse-voice 1.5s ease-in-out infinite;
+  box-shadow: 0 4px 20px rgba(231, 76, 60, 0.5);
+}
+
+@keyframes pulse-voice {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 4px 20px rgba(231, 76, 60, 0.5);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 6px 30px rgba(231, 76, 60, 0.7);
+  }
+}
+
+/* Microphone Icon */
+.mic-icon {
+  font-size: 1.3rem;
+  animation: mic-bounce 2s ease-in-out infinite;
+}
+
+.voice-button.listening .mic-icon {
+  animation: mic-pulse 0.8s ease-in-out infinite;
+}
+
+@keyframes mic-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes mic-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+/* Voice Text */
+.voice-text {
+  font-size: 0.95rem;
+  letter-spacing: 0.3px;
+}
+
+/* Clear Button */
+.clear-button {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+}
+
+.clear-button:hover {
+  background: #c0392b;
+  transform: rotate(90deg);
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+}
+
+/* Voice Transcript */
+.voice-transcript {
+  margin-top: 15px;
+  padding: 15px;
+  background: white;
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.transcript-label {
+  display: block;
+  font-weight: 600;
+  color: #667eea;
+  margin-bottom: 5px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.transcript-text {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  font-style: italic;
+}
+
+/* Voice Indicator */
+.voice-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 15px;
+  color: #e74c3c;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.pulse-dot {
+  width: 10px;
+  height: 10px;
+  background: #e74c3c;
+  border-radius: 50%;
+  animation: pulse-dot 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0.5;
+  }
+}
+
+/* Responsive Voice Input */
+@media (max-width: 768px) {
+  .voice-input-container {
+    padding: 15px;
+    margin: 15px 0;
+  }
+
+  .voice-button {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+  }
+
+  .mic-icon {
+    font-size: 1.1rem;
+  }
+
+  .voice-text {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .voice-input-container {
+    padding: 12px;
+  }
+
+  .voice-controls {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .voice-button {
+    width: 100%;
+    justify-content: center;
+    padding: 12px;
+  }
+
+  .clear-button {
+    width: 100%;
+    border-radius: 8px;
+    height: 40px;
+  }
+
+  .clear-button:hover {
+    transform: rotate(0deg);
+  }
+
+  .transcript-text {
+    font-size: 0.9rem;
+  }
+}
+
