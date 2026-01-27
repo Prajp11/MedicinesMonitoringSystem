@@ -7,6 +7,7 @@ import ItemDetails from './components/ItemDetails';
 import SearchResult from './components/SearchResult';
 import About from './components/About';
 import Login from './components/Login';
+import Signup from './components/Signup';
 import Footer from './components/Footer';
 import NavBar from './components/NavBar';
 import Contact from './components/Contact';
@@ -35,6 +36,7 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login setLoggedIn={setLoggedIn} />} />
+          <Route path="/signup" element={<Signup setLoggedIn={setLoggedIn} />} />
 
             {/* Chatbot Route (public) */}
             <Route path="/chatbot" element={<Chatbot />} />

@@ -5,8 +5,9 @@ export const API_BASE_URL = 'http://localhost:8000/api';
 
 // Authentication endpoints
 const AUTH_URLS = {
-    login: `${API_BASE_URL}/token/`,
-    refresh: `${API_BASE_URL}/token/refresh/`,
+    signup: `${API_BASE_URL}/auth/signup/`,
+    login: `${API_BASE_URL}/auth/login/`,
+    refresh: `${API_BASE_URL}/auth/refresh/`,
     logout: `${API_BASE_URL}/auth/logout/`,
 };
 
@@ -93,22 +94,69 @@ export const login = async (username, password) => {
       password 
     });
     
-    const { access, refresh } = response.data;
+    // Handle different response formats
+    let accessToken, refreshToken;
     
-    if (!access) {
+    if (response.data.tokens) {
+      // Format: { tokens: { access: "...", refresh: "..." } }
+      accessToken = response.data.tokens.access;
+      refreshToken = response.data.tokens.refresh;
+    } else {
+      // Format: { access: "...", refresh: "..." } or { access_token: "...", refresh_token: "..." }
+      const { access, refresh, access_token, refresh_token } = response.data;
+      accessToken = access || access_token;
+      refreshToken = refresh || refresh_token;
+    }
+    
+    if (!accessToken) {
       throw new Error('No access token received from server');
     }
     
     // Store tokens in localStorage
-    localStorage.setItem('accessToken', access);
-    if (refresh) {
-      localStorage.setItem('refreshToken', refresh);
+    localStorage.setItem('accessToken', accessToken);
+    if (refreshToken) {
+      localStorage.setItem('refreshToken', refreshToken);
+    }
+    
+    // Store user data if provided
+    if (response.data.user) {
+      localStorage.setItem('user', JSON.stringify(response.data.user));
     }
     
     console.log('✓ Login successful, tokens stored');
-    return access;
+    return accessToken;
   } catch (error) {
     console.error('Login error:', error.response?.data || error.message);
+    throw error;
+  }
+};
+
+// Handle signup/registration
+export const signup = async (userData) => {
+  try {
+    console.log('Attempting signup to:', AUTH_URLS.signup);
+    const response = await axios.post(AUTH_URLS.signup, userData);
+    
+    const { access, refresh, access_token, refresh_token } = response.data;
+    
+    // Handle different response formats
+    const accessToken = access || access_token;
+    const refreshToken = refresh || refresh_token;
+    
+    if (!accessToken) {
+      throw new Error('No access token received from server');
+    }
+    
+    // Store tokens in localStorage
+    localStorage.setItem('accessToken', accessToken);
+    if (refreshToken) {
+      localStorage.setItem('refreshToken', refreshToken);
+    }
+    
+    console.log('✓ Signup successful, tokens stored');
+    return accessToken;
+  } catch (error) {
+    console.error('Signup error:', error.response?.data || error.message);
     throw error;
   }
 };

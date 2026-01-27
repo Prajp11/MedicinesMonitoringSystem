@@ -72,40 +72,97 @@ const Home = () => {
 
   return (
     <div className="home-container">
-      <h1>Welcome to the Quality Monitoring System</h1>
-      <p>
-        Our platform helps hospitals ensure that medicines and consumables meet quality standards
-        with automated testing and monitoring.
-      </p>
-
-      {/* Card layout for key features */}
-      <section className="card-container">
-        {features.map((feature, index) => (
-          <div key={index} className="feature-card">
-            <img src={feature.img} alt={feature.title} className="feature-img" />
-            <h3 className="feature-title">{feature.title}</h3>
-            <p className="feature-info">{feature.info}</p>
+      {/* Hero Section */}
+      <section className="hero-section">
+        <div className="hero-content">
+          <div className="hero-badge">🏥 Healthcare Excellence</div>
+          <h1 className="hero-title">
+            Quality Monitoring System
+            <span className="gradient-text"> for Healthcare</span>
+          </h1>
+          <p className="hero-description">
+            Revolutionize your healthcare supply chain with AI-powered quality monitoring.
+            Ensure medicines and consumables meet the highest standards with real-time automated testing.
+          </p>
+          <div className="hero-actions">
+            <Link to="/login" className="cta-primary">
+              <span>Get Started</span>
+              <span className="arrow">→</span>
+            </Link>
+            <Link to="/about" className="cta-secondary">
+              <span>Learn More</span>
+            </Link>
           </div>
-        ))}
+          <div className="hero-stats">
+            <div className="stat-item">
+              <div className="stat-number">99.9%</div>
+              <div className="stat-label">Accuracy</div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-number">24/7</div>
+              <div className="stat-label">Monitoring</div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-number">Real-time</div>
+              <div className="stat-label">Updates</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="features-section">
+        <div className="section-header">
+          <h2 className="section-title">Powerful Features</h2>
+          <p className="section-subtitle">Everything you need to maintain quality standards</p>
+        </div>
+
+        <div className="card-container">
+          {features.map((feature, index) => (
+            <div key={index} className="feature-card" data-index={index}>
+              <div className="feature-img-wrapper">
+                <img src={feature.img} alt={feature.title} className="feature-img" />
+                <div className="feature-overlay"></div>
+              </div>
+              <div className="feature-content">
+                <h3 className="feature-title">{feature.title}</h3>
+                <p className="feature-info">{feature.info}</p>
+              </div>
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* FAQ Section */}
       <section className="faq-section">
-        <h2>Frequently Asked Questions</h2>
-        {faqs.map((faq, index) => (
-          <div key={index} className={`faq-card ${openFaqIndex === index ? 'open' : ''}`} onClick={() => toggleFaq(index)}>
-            <div className="faq-question">
-              <span>{faq.question}</span>
-              <span className={`arrow ${openFaqIndex === index ? 'open' : ''}`}>&#9660;</span>
+        <div className="section-header">
+          <h2 className="section-title">Frequently Asked Questions</h2>
+          <p className="section-subtitle">Everything you need to know about our system</p>
+        </div>
+        <div className="faq-container">
+          {faqs.map((faq, index) => (
+            <div key={index} className={`faq-card ${openFaqIndex === index ? 'open' : ''}`} onClick={() => toggleFaq(index)}>
+              <div className="faq-question">
+                <span>{faq.question}</span>
+                <span className={`faq-icon ${openFaqIndex === index ? 'open' : ''}`}>+</span>
+              </div>
+              {openFaqIndex === index && <p className="faq-answer">{faq.answer}</p>}
             </div>
-            {openFaqIndex === index && <p className="faq-answer">{faq.answer}</p>}
-          </div>
-        ))}
+          ))}
+        </div>
       </section>
 
-      <Link to="/login">
-        <button className="login-button">Login to Monitor</button>
-      </Link>
+      {/* CTA Section */}
+      <section className="cta-section">
+        <div className="cta-content">
+          <h2>Ready to Transform Your Quality Control?</h2>
+          <p>Join healthcare facilities worldwide using our advanced monitoring system</p>
+          <Link to="/login" className="cta-button">
+            <span>Start Monitoring Now</span>
+            <span className="arrow">→</span>
+          </Link>
+        </div>
+      </section>
     </div>
   );
 };

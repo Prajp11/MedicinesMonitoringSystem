@@ -36,7 +36,7 @@ const ItemList = () => {
           const refreshToken = localStorage.getItem('refreshToken');
           if (refreshToken) {
             try {
-              const refreshResponse = await fetch('http://localhost:8000/api/token/refresh/', {
+              const refreshResponse = await fetch('http://localhost:8000/api/auth/refresh/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ refresh: refreshToken }),
@@ -75,7 +75,17 @@ const ItemList = () => {
         }
 
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          // Get error details from response
+          let errorMessage = `HTTP error! status: ${response.status}`;
+          try {
+            const errorData = await response.json();
+            console.error('Backend error details:', errorData);
+            errorMessage = errorData.detail || errorData.message || errorMessage;
+          } catch (e) {
+            // If response is not JSON, use status text
+            errorMessage = `${response.status} ${response.statusText}`;
+          }
+          throw new Error(errorMessage);
         }
 
         const data = await response.json();
@@ -84,8 +94,19 @@ const ItemList = () => {
 
       } catch (error) {
         console.error('Error fetching items:', error);
-        setMessage(`Error fetching medicines: ${error.message}. Please check your backend connection.`);
-        setTimeout(() => setMessage(''), 5000);
+        
+        // More user-friendly error messages
+        let userMessage = 'Error fetching medicines. ';
+        if (error.message.includes('500')) {
+          userMessage += 'Backend server error. Please check your Django backend logs for details.';
+        } else if (error.message.includes('Failed to fetch')) {
+          userMessage += 'Cannot connect to backend. Make sure your Django server is running on port 8000.';
+        } else {
+          userMessage += error.message;
+        }
+        
+        setMessage(userMessage);
+        setTimeout(() => setMessage(''), 10000);
       }
     };
 
@@ -125,7 +146,7 @@ const ItemList = () => {
         // Token expired, try to refresh
         const refreshToken = localStorage.getItem('refreshToken');
         if (refreshToken) {
-          const refreshResponse = await fetch('http://localhost:8000/api/token/refresh/', {
+          const refreshResponse = await fetch('http://localhost:8000/api/auth/refresh/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ refresh: refreshToken }),

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { login } from '../api'; // Import login function from api.js
 
 const Login = ({ setLoggedIn }) => {
@@ -187,6 +187,22 @@ const Login = ({ setLoggedIn }) => {
                 Logout
               </button>
             </div>
+          </div>
+        )}
+
+        {!isLoggedIn && (
+          <div className="login-footer" style={{ marginTop: '20px', textAlign: 'center' }}>
+            <p>
+              Don't have an account?{' '}
+              <Link to="/signup" className="signup-link" style={{ 
+                color: '#4f46e5', 
+                textDecoration: 'none', 
+                fontWeight: '600',
+                transition: 'color 0.3s'
+              }}>
+                Sign up here
+              </Link>
+            </p>
           </div>
         )}
       </div>
