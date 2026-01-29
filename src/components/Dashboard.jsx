@@ -77,6 +77,7 @@ const Dashboard = () => {
     { name: 'Delete Item', icon: '🗑️', link: '/delete-medicine', color: '#e74c3c' },
     { name: 'Quality Dashboard', icon: '📊', link: '/quality-scores', color: '#8b5cf6' },
     { name: 'Acceptance Stats', icon: '📦', link: '/acceptance-stats', color: '#10b981' },
+    { name: 'Environmental Alerts', icon: '🚨', link: '/environmental-alerts', color: '#ef4444' },
   ];
 
   return (

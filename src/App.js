@@ -15,6 +15,7 @@ import DeleteMedicine from './components/DeleteMedicine';
 import UpdateMedicine from './components/UpdateMedicine';
 import QualityScoreDashboard from './components/QualityScoreDashboard';
 import AcceptanceStatsDashboard from './components/AcceptanceStatsDashboard';
+import EnvironmentalAlerts from './components/EnvironmentalAlerts';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import './App.css';
 import Chatbot from './components/Chatbot';
@@ -103,6 +104,10 @@ function App() {
                 <AcceptanceStatsDashboard />
               </ProtectedRoute>
             }
+          />
+          <Route
+            path="/environmental-alerts"
+            element={<EnvironmentalAlerts />}
           />
         </Routes>
         <Footer />
