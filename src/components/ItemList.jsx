@@ -126,13 +126,19 @@ const ItemList = () => {
 
   // Handle voice input
   const handleVoiceInput = (transcript) => {
+    console.log('Voice transcript received:', transcript);
     const parsedData = parseVoiceCommand(transcript);
+    console.log('Parsed voice data:', parsedData);
     
     // Map parsed data to form fields
     const updatedItem = { ...newItem };
     
     if (parsedData.medicine_name) {
-      updatedItem.name = parsedData.medicine_name;
+      // Capitalize first letter of each word for better formatting
+      updatedItem.name = parsedData.medicine_name
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
     }
     if (parsedData.batch_number) {
       updatedItem.batch_number = parsedData.batch_number;
@@ -147,6 +153,9 @@ const ItemList = () => {
     const summary = formatParsedData(parsedData);
     if (summary !== 'No data recognized') {
       setMessage(`Voice input captured: ${summary}`);
+      setTimeout(() => setMessage(''), 5000);
+    } else {
+      setMessage('⚠️ Could not parse voice input. Try: "Medicine [name] batch [number]"');
       setTimeout(() => setMessage(''), 5000);
     }
   };

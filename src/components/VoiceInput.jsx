@@ -21,17 +21,26 @@ const VoiceInput = ({
   } = useSpeechRecognition();
 
   const lastTranscriptRef = useRef('');
+  const hasProcessedRef = useRef(false);
 
-  // Auto-stop listening after 5 seconds of silence
+  // Auto-stop listening after 15 seconds and send data
   useEffect(() => {
     if (listening) {
+      hasProcessedRef.current = false;
       const timer = setTimeout(() => {
         SpeechRecognition.stopListening();
-      }, 5000);
+      }, 15000);
       
       return () => clearTimeout(timer);
+    } else {
+      // When listening stops, send the transcript data
+      if (transcript && !hasProcessedRef.current) {
+        hasProcessedRef.current = true;
+        console.log('Voice input stopped, sending transcript:', transcript);
+        onVoiceData(transcript);
+      }
     }
-  }, [listening]);
+  }, [listening, transcript, onVoiceData]);
 
   if (!browserSupportsSpeechRecognition) {
     return (
@@ -54,17 +63,13 @@ const VoiceInput = ({
 
   const handleStopListening = () => {
     SpeechRecognition.stopListening();
-    
-    // Send data only if transcript changed and is not empty
-    if (transcript && transcript !== lastTranscriptRef.current) {
-      lastTranscriptRef.current = transcript;
-      onVoiceData(transcript);
-    }
+    // Data will be sent by the useEffect when listening becomes false
   };
 
   const handleClear = () => {
     resetTranscript();
     lastTranscriptRef.current = '';
+    hasProcessedRef.current = false;
   };
 
   return (

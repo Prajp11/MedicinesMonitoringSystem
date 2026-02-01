@@ -71,13 +71,14 @@ const Dashboard = () => {
   ];
 
   const quickActions = [
-    { name: 'View Items', icon: '📋', link: '/items', color: '#667eea' },
     { name: 'Add Medicine', icon: '➕', link: '/items', color: '#27ae60' },
     { name: 'Update Record', icon: '✏️', link: '/update-medicine', color: '#f39c12' },
     { name: 'Delete Item', icon: '🗑️', link: '/delete-medicine', color: '#e74c3c' },
     { name: 'Quality Dashboard', icon: '📊', link: '/quality-scores', color: '#8b5cf6' },
     { name: 'Acceptance Stats', icon: '📦', link: '/acceptance-stats', color: '#10b981' },
     { name: 'Environmental Alerts', icon: '🚨', link: '/environmental-alerts', color: '#ef4444' },
+    { name: 'Expiry Management', icon: '📅', link: '/expiry-status', color: '#f59e0b' },
+    { name: 'Performance Analytics', icon: '📊', link: '/performance-analytics', color: '#3b82f6' },
   ];
 
   return (

@@ -16,6 +16,8 @@ import UpdateMedicine from './components/UpdateMedicine';
 import QualityScoreDashboard from './components/QualityScoreDashboard';
 import AcceptanceStatsDashboard from './components/AcceptanceStatsDashboard';
 import EnvironmentalAlerts from './components/EnvironmentalAlerts';
+import ExpiryStatusDashboard from './components/ExpiryStatusDashboard';
+import PerformanceAnalytics from './components/PerformanceAnalytics';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import './App.css';
 import Chatbot from './components/Chatbot';
@@ -108,6 +110,14 @@ function App() {
           <Route
             path="/environmental-alerts"
             element={<EnvironmentalAlerts />}
+          />
+          <Route
+            path="/expiry-status"
+            element={<ExpiryStatusDashboard />}
+          />
+          <Route
+            path="/performance-analytics"
+            element={<PerformanceAnalytics />}
           />
         </Routes>
         <Footer />

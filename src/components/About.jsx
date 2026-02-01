@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import '../App.css'; // Import your CSS file for styles
 import { 
   FaHospital, 
@@ -18,49 +18,8 @@ import hospitalImg from '../Images/AboutImages/hospitalfocus.jpg';
 import safeImg from '../Images/AboutImages/safeconsume.jpg';
 
 const About = () => {
-  const [isVisible, setIsVisible] = useState({});
-  const [counters, setCounters] = useState({
-    hospitals: 0,
-    tests: 0,
-    accuracy: 0,
-    satisfaction: 0
-  });
-
-  useEffect(() => {
-    // Animate counters
-    const animateCounters = () => {
-      const targets = {
-        hospitals: 150,
-        tests: 50000,
-        accuracy: 99,
-        satisfaction: 98
-      };
-
-      const duration = 2000;
-      const increment = 50;
-      
-      Object.keys(targets).forEach(key => {
-        let current = 0;
-        const target = targets[key];
-        const step = target / (duration / increment);
-        
-        const timer = setInterval(() => {
-          current += step;
-          if (current >= target) {
-            current = target;
-            clearInterval(timer);
-          }
-          setCounters(prev => ({ ...prev, [key]: Math.floor(current) }));
-        }, increment);
-      });
-    };
-
-    const timer = setTimeout(animateCounters, 500);
-    return () => clearTimeout(timer);
-  }, []);
-
   const handleCardVisible = (index) => {
-    setIsVisible(prev => ({ ...prev, [index]: true }));
+    // Card hover effect handler
   };
 
   return (
@@ -69,30 +28,34 @@ const About = () => {
       <div className="about-hero">
         <div className="hero-background-overlay"></div>
         <div className="hero-content">
-          <div className="hero-badge">
-            <FaShieldAlt className="badge-icon" />
-            <span>Trusted Healthcare Partner</span>
+          <div className="hero-left">
+            <div className="hero-badge">
+              <FaShieldAlt className="badge-icon" />
+              <span>Trusted Healthcare Partner</span>
+            </div>
+            <h1 className="about-title">
+              Revolutionizing Healthcare 
+              <span className="highlight-text"> Quality Control</span>
+            </h1>
+            <p className="about-subtitle">
+              Our advanced platform ensures hospitals receive the highest quality medicines and consumables 
+              through automated testing, intelligent monitoring, and comprehensive quality assurance.
+            </p>
           </div>
-          <h1 className="about-title">
-            Revolutionizing Healthcare 
-            <span className="highlight-text"> Quality Control</span>
-          </h1>
-          <p className="about-subtitle">
-            Our advanced platform ensures hospitals receive the highest quality medicines and consumables 
-            through automated testing, intelligent monitoring, and comprehensive quality assurance.
-          </p>
-          <div className="hero-features">
-            <div className="hero-feature">
-              <FaCheckCircle className="feature-check" />
-              <span>FDA Compliant</span>
-            </div>
-            <div className="hero-feature">
-              <FaCheckCircle className="feature-check" />
-              <span>Real-time Monitoring</span>
-            </div>
-            <div className="hero-feature">
-              <FaCheckCircle className="feature-check" />
-              <span>24/7 Support</span>
+          <div className="hero-right">
+            <div className="hero-features">
+              <div className="hero-feature">
+                <FaCheckCircle className="feature-check" />
+                <span>FDA Compliant</span>
+              </div>
+              <div className="hero-feature">
+                <FaCheckCircle className="feature-check" />
+                <span>Real-time Monitoring</span>
+              </div>
+              <div className="hero-feature">
+                <FaCheckCircle className="feature-check" />
+                <span>24/7 Support</span>
+              </div>
             </div>
           </div>
         </div>

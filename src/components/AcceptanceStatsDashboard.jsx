@@ -7,6 +7,8 @@ const AcceptanceStatsDashboard = () => {
   const [error, setError] = useState(null);
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
+  const [showAllReasons, setShowAllReasons] = useState(false);
+  const [showAllSuppliers, setShowAllSuppliers] = useState(false);
 
   const fetchAcceptanceStats = useCallback(async () => {
     setLoading(true);
@@ -120,10 +122,17 @@ const AcceptanceStatsDashboard = () => {
 
   const { overview, rejection_reasons, supplier_stats, date_range } = statsData;
 
+  // Limit displayed items for better UX
+  const displayedReasons = showAllReasons ? rejection_reasons : rejection_reasons?.slice(0, 5) || [];
+  const displayedSuppliers = showAllSuppliers ? supplier_stats : supplier_stats?.slice(0, 8) || [];
+
   return (
     <div className="acceptance-stats-dashboard">
       <div className="dashboard-header">
-        <h1>📦 Batch Acceptance Dashboard</h1>
+        <div className="header-content">
+          <h1>📦 Batch Acceptance Dashboard</h1>
+          <p className="header-subtitle">Monitor quality metrics and supplier performance</p>
+        </div>
         <Link to="/dashboard" className="back-button">← Back to Dashboard</Link>
       </div>
 
@@ -210,10 +219,20 @@ const AcceptanceStatsDashboard = () => {
       <div className="detailed-stats-section">
         {/* Rejection Reasons */}
         <div className="rejection-reasons-card">
-          <h2>🔴 Top Rejection Reasons</h2>
-          {rejection_reasons && rejection_reasons.length > 0 ? (
-            <div className="rejection-reasons-list">
-              {rejection_reasons.map((reason, index) => (
+          <div className="card-header-with-action">
+            <h2>🔴 Top Rejection Reasons</h2>
+            {rejection_reasons && rejection_reasons.length > 5 && (
+              <button 
+                className="view-toggle-btn"
+                onClick={() => setShowAllReasons(!showAllReasons)}
+              >
+                {showAllReasons ? 'Show Less' : `View All (${rejection_reasons.length})`}
+              </button>
+            )}
+          </div>
+          {displayedReasons && displayedReasons.length > 0 ? (
+            <div className="rejection-reasons-list compact-list">
+              {displayedReasons.map((reason, index) => (
                 <div key={index} className="rejection-reason-item">
                   <div className="reason-header">
                     <span className="reason-rank">#{index + 1}</span>
@@ -238,49 +257,61 @@ const AcceptanceStatsDashboard = () => {
 
         {/* Supplier Performance */}
         <div className="supplier-performance-card">
-          <h2>🏢 Supplier Performance</h2>
-          {supplier_stats && supplier_stats.length > 0 ? (
-            <div className="supplier-table-container">
-              <table className="supplier-table">
-                <thead>
-                  <tr>
-                    <th>Rank</th>
-                    <th>Supplier</th>
-                    <th>Total</th>
-                    <th>Accepted</th>
-                    <th>Rejected</th>
-                    <th>Acceptance Rate</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {supplier_stats.map((supplier, index) => (
-                    <tr key={index} className={index < 3 ? 'top-performer' : ''}>
-                      <td>
-                        <span className="rank-badge">
-                          {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : index + 1}
-                        </span>
-                      </td>
-                      <td className="supplier-name">{supplier.supplier}</td>
-                      <td>{supplier.total_batches}</td>
-                      <td className="accepted-cell">{supplier.accepted}</td>
-                      <td className="rejected-cell">{supplier.rejected}</td>
-                      <td>
-                        <div className="acceptance-rate-cell">
-                          <div 
-                            className={`rate-badge ${
-                              supplier.acceptance_rate >= 95 ? 'excellent' :
-                              supplier.acceptance_rate >= 85 ? 'good' :
-                              supplier.acceptance_rate >= 70 ? 'average' : 'poor'
-                            }`}
-                          >
-                            {supplier.acceptance_rate.toFixed(1)}%
-                          </div>
-                        </div>
-                      </td>
+          <div className="card-header-with-action">
+            <h2>🏢 Supplier Performance</h2>
+            {supplier_stats && supplier_stats.length > 8 && (
+              <button 
+                className="view-toggle-btn"
+                onClick={() => setShowAllSuppliers(!showAllSuppliers)}
+              >
+                {showAllSuppliers ? 'Show Less' : `View All (${supplier_stats.length})`}
+              </button>
+            )}
+          </div>
+          {displayedSuppliers && displayedSuppliers.length > 0 ? (
+            <div className="supplier-table-wrapper">
+              <div className="supplier-table-container compact-table">
+                <table className="supplier-table">
+                  <thead>
+                    <tr>
+                      <th>Rank</th>
+                      <th>Supplier</th>
+                      <th>Total</th>
+                      <th>Accepted</th>
+                      <th>Rejected</th>
+                      <th>Acceptance Rate</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {displayedSuppliers.map((supplier, index) => (
+                      <tr key={index} className={index < 3 ? 'top-performer' : ''}>
+                        <td>
+                          <span className="rank-badge">
+                            {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : index + 1}
+                          </span>
+                        </td>
+                        <td className="supplier-name">{supplier.supplier}</td>
+                        <td>{supplier.total_batches}</td>
+                        <td className="accepted-cell">{supplier.accepted}</td>
+                        <td className="rejected-cell">{supplier.rejected}</td>
+                        <td>
+                          <div className="acceptance-rate-cell">
+                            <div 
+                              className={`rate-badge ${
+                                supplier.acceptance_rate >= 95 ? 'excellent' :
+                                supplier.acceptance_rate >= 85 ? 'good' :
+                                supplier.acceptance_rate >= 70 ? 'average' : 'poor'
+                              }`}
+                            >
+                              {supplier.acceptance_rate.toFixed(1)}%
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           ) : (
             <p className="no-data-message">No supplier data available</p>

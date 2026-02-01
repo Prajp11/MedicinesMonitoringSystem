@@ -8,12 +8,9 @@ const Login = ({ setLoggedIn }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showHint, setShowHint] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
-
-  // Hardcoded credentials
-  const validUsername = 'Prajwalp11';
-  const validPassword = 'Prajwal@123';
 
   // Check if user is already logged in
   useEffect(() => {
@@ -82,11 +79,21 @@ const Login = ({ setLoggedIn }) => {
             </div>
 
             <div className="login-help">
-              <p className="demo-credentials">
-                <strong>Demo Credentials:</strong><br />
-                Username: Prajwalp11<br />
-                Password: Prajwal@123
-              </p>
+              <button 
+                type="button"
+                className="hint-button"
+                onClick={() => setShowHint(!showHint)}
+              >
+                💡 {showHint ? 'Hide' : 'Show'} Demo Credentials
+              </button>
+              
+              {showHint && (
+                <div className="demo-credentials">
+                  <strong>Demo Credentials:</strong><br />
+                  Username: Prajwalp11<br />
+                  Password: Prajwal@123
+                </div>
+              )}
             </div>
 
             {error && (

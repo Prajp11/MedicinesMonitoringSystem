@@ -15,14 +15,16 @@ export const parseVoiceCommand = (transcript) => {
   const lower = transcript.toLowerCase();
   
   // Parse medicine name (after "medicine" or "add" keywords)
-  // Examples: "add medicine Paracetamol", "medicine Aspirin"
-  const medicineMatch = lower.match(/(?:add\s+)?medicine\s+([a-zA-Z0-9\s]+?)(?:\s+batch|\s+temp|\s+humidity|\s+expiry|\s+status|$)/i);
+  // Examples: "add medicine Paracetamol", "medicine Aspirin", "medicine name Combiflam"
+  // Updated to handle "medicine name X" and "medicine X" patterns
+  let medicineMatch = lower.match(/(?:add\s+)?medicine\s+(?:name\s+)?([a-zA-Z0-9\s]+?)(?:\s+batch|\s+temp|\s+humidity|\s+expiry|\s+status|$)/i);
   if (medicineMatch) {
     data.medicine_name = medicineMatch[1].trim();
   }
   
   // Parse batch number
-  // Examples: "batch A123", "batch number B456"
+  // Examples: "batch A123", "batch number B456", "batch number 12345"
+  // Updated to capture alphanumeric characters including spaces for complex batch numbers
   const batchMatch = lower.match(/batch\s+(?:number\s+)?([a-z0-9]+)/i);
   if (batchMatch) {
     data.batch_number = batchMatch[1].toUpperCase();
