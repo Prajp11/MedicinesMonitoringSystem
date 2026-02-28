@@ -74,35 +74,37 @@ const NavBar = ({ setLoggedIn }) => {
             <li className="nav-item">
               <Link to="/" className="nav-link" onClick={closeMobileMenu}>
                 <span className="nav-icon">🏠</span>
-                Home
+                <span className="nav-text">Home</span>
               </Link>
             </li>
             
             {isLoggedIn && (
-              <li className="nav-item">
-                <Link to="/dashboard" className="nav-link" onClick={closeMobileMenu}>
-                  <span className="nav-icon">📊</span>
-                  Dashboard
-                </Link>
-              </li>
+              <>
+                <li className="nav-item">
+                  <Link to="/dashboard" className="nav-link" onClick={closeMobileMenu}>
+                    <span className="nav-icon">📊</span>
+                    <span className="nav-text">Dashboard</span>
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="/chatbot" className="nav-link" onClick={closeMobileMenu}>
+                    <span className="nav-icon">🤖</span>
+                    <span className="nav-text">AI Assistant</span>
+                  </Link>
+                </li>
+              </>
             )}
             
             <li className="nav-item">
               <Link to="/about" className="nav-link" onClick={closeMobileMenu}>
                 <span className="nav-icon">ℹ️</span>
-                About Us
+                <span className="nav-text">About</span>
               </Link>
             </li>
             <li className="nav-item">
               <Link to="/contact" className="nav-link" onClick={closeMobileMenu}>
                 <span className="nav-icon">📞</span>
-                Contact Us
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link to="/chatbot" className="nav-link" onClick={closeMobileMenu}>
-                <span className="nav-icon">🤖</span>
-                Chatbot
+                <span className="nav-text">Contact</span>
               </Link>
             </li>
             
@@ -111,17 +113,19 @@ const NavBar = ({ setLoggedIn }) => {
                 <button 
                   onClick={handleLogout} 
                   className="nav-link logout-btn"
+                  aria-label="Logout"
                 >
                   <span className="nav-icon">🚪</span>
-                  Logout
+                  <span className="nav-text">Logout</span>
                 </button>
               ) : (
                 <button 
                   onClick={handleLogin}
                   className="nav-link login-btn enhanced-login"
+                  aria-label="Login"
                 >
                   <span className="nav-icon">🔐</span>
-                  Login
+                  <span className="nav-text">Sign In</span>
                 </button>
               )}
             </li>
