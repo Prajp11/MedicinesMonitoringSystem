@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { fetchItems, deleteItem } from '../api'; // Ensure API functions are imported
 
 const DeleteMedicine = () => {
+  const navigate = useNavigate();
   const [medicines, setMedicines] = useState([]); // List of medicines
   const [searchQuery, setSearchQuery] = useState(''); // Search input value
   const [filteredMedicines, setFilteredMedicines] = useState([]); // Search results
@@ -52,6 +54,37 @@ const DeleteMedicine = () => {
 
   return (
     <div className="delete-medicine-container">
+      <button 
+        onClick={() => navigate('/dashboard')} 
+        className="back-to-dashboard-btn"
+        style={{
+          background: 'linear-gradient(135deg, #667eea, #764ba2)',
+          color: 'white',
+          border: 'none',
+          padding: '12px 24px',
+          borderRadius: '10px',
+          fontSize: '1rem',
+          fontWeight: '600',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          marginBottom: '20px',
+          transition: 'all 0.3s ease',
+          boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)'
+        }}
+        onMouseOver={(e) => {
+          e.currentTarget.style.transform = 'translateY(-2px)';
+          e.currentTarget.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.4)';
+        }}
+        onMouseOut={(e) => {
+          e.currentTarget.style.transform = 'translateY(0)';
+          e.currentTarget.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.3)';
+        }}
+      >
+        <span>←</span> Back to Dashboard
+      </button>
+      
       <h2>Delete Medicine</h2>
 
       {/* Search Bar */}

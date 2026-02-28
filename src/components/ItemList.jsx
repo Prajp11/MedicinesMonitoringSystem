@@ -1,21 +1,39 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import VoiceInput from './VoiceInput';
 import { parseVoiceCommand, formatParsedData } from '../utils/voiceParser';
 // Enhanced styles are now in App.css - Premium UI design with modern aesthetics
 
 const ItemList = () => {
+  const navigate = useNavigate();
   const [items, setItems] = useState([]); // List of medicines
   const [newItem, setNewItem] = useState({
     name: '',
     batch_number: '',
     accepted_or_rejected: '',
   });
-  const [message, setMessage] = useState(''); // Success or error message
   const [isLoading, setIsLoading] = useState(false); // Loading state for better UX
   const [showFullList, setShowFullList] = useState(false); // State to toggle full list visibility
   const [uploadFile, setUploadFile] = useState(null); // CSV file for upload
-  const [uploadProgress, setUploadProgress] = useState(''); // Upload status message
   const [isUploading, setIsUploading] = useState(false); // Upload loading state
+  const [toasts, setToasts] = useState([]); // Toast notifications
+
+  // Toast notification function
+  const showToast = (message, type = 'success') => {
+    const id = Date.now();
+    const newToast = { id, message, type };
+    setToasts(prev => [...prev, newToast]);
+    
+    // Auto remove toast after 5 seconds
+    setTimeout(() => {
+      setToasts(prev => prev.filter(toast => toast.id !== id));
+    }, 5000);
+  };
+
+  // Remove toast manually
+  const removeToast = (id) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id));
+  };
 
   // Fetch existing items from API
   useEffect(() => {
@@ -23,7 +41,7 @@ const ItemList = () => {
       const token = localStorage.getItem('accessToken');
       if (!token) {
         console.error('No access token found. Please log in.');
-        setMessage('Please log in to view medicines.');
+        showToast('Please log in to view medicines.', 'error');
         return;
       }
 
@@ -74,7 +92,7 @@ const ItemList = () => {
           // If refresh failed, clear tokens and redirect to login
           localStorage.removeItem('accessToken');
           localStorage.removeItem('refreshToken');
-          setMessage('Session expired. Please log in again.');
+          showToast('Session expired. Please log in again.', 'error');
           setTimeout(() => window.location.href = '/login', 2000);
           return;
         }
@@ -110,8 +128,7 @@ const ItemList = () => {
           userMessage += error.message;
         }
         
-        setMessage(userMessage);
-        setTimeout(() => setMessage(''), 10000);
+        showToast(userMessage, 'error');
       }
     };
 
@@ -152,11 +169,9 @@ const ItemList = () => {
     // Show feedback message
     const summary = formatParsedData(parsedData);
     if (summary !== 'No data recognized') {
-      setMessage(`Voice input captured: ${summary}`);
-      setTimeout(() => setMessage(''), 5000);
+      showToast(`Voice input captured: ${summary}`, 'info');
     } else {
-      setMessage('⚠️ Could not parse voice input. Try: "Medicine [name] batch [number]"');
-      setTimeout(() => setMessage(''), 5000);
+      showToast('⚠️ Could not parse voice input. Try: "Medicine [name] batch [number]"', 'warning');
     }
   };
 
@@ -179,12 +194,10 @@ const ItemList = () => {
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
       
-      setUploadProgress('✅ Template downloaded successfully!');
-      setTimeout(() => setUploadProgress(''), 3000);
+      showToast('Template downloaded successfully!', 'success');
     } catch (error) {
       console.error('Error downloading template:', error);
-      setUploadProgress('❌ Failed to download template. Please try again.');
-      setTimeout(() => setUploadProgress(''), 3000);
+      showToast('Failed to download template. Please try again.', 'error');
     }
   };
 
@@ -193,20 +206,18 @@ const ItemList = () => {
     const file = e.target.files[0];
     if (file) {
       if (file.type !== 'text/csv' && !file.name.endsWith('.csv')) {
-        setUploadProgress('❌ Please select a valid CSV file');
-        setTimeout(() => setUploadProgress(''), 3000);
+        showToast('Please select a valid CSV file', 'error');
         return;
       }
       setUploadFile(file);
-      setUploadProgress(`📄 Selected: ${file.name}`);
+      showToast(`Selected: ${file.name}`, 'info');
     }
   };
 
   // Upload CSV File
   const handleUploadCSV = async () => {
     if (!uploadFile) {
-      setUploadProgress('❌ Please select a CSV file first');
-      setTimeout(() => setUploadProgress(''), 3000);
+      showToast('Please select a CSV file first', 'warning');
       return;
     }
 
@@ -214,9 +225,8 @@ const ItemList = () => {
     const token = localStorage.getItem('accessToken');
 
     if (!token) {
-      setUploadProgress('❌ No access token found. Please log in.');
+      showToast('No access token found. Please log in.', 'error');
       setIsUploading(false);
-      setTimeout(() => setUploadProgress(''), 3000);
       return;
     }
 
@@ -240,10 +250,10 @@ const ItemList = () => {
       const result = await response.json();
       
       // Show success message
-      setUploadProgress(`✅ Successfully created ${result.created} medicines!`);
+      showToast(`Successfully created ${result.created} medicines!`, 'success');
       
       // Refresh items list
-      window.location.reload();
+      setTimeout(() => window.location.reload(), 1500);
       
       // Reset file input
       setUploadFile(null);
@@ -252,10 +262,9 @@ const ItemList = () => {
       
     } catch (error) {
       console.error('Error uploading CSV:', error);
-      setUploadProgress(`❌ Upload failed: ${error.message}`);
+      showToast(`Upload failed: ${error.message}`, 'error');
     } finally {
       setIsUploading(false);
-      setTimeout(() => setUploadProgress(''), 5000);
     }
   };
 
@@ -266,7 +275,7 @@ const ItemList = () => {
     const token = localStorage.getItem('accessToken');
 
     if (!token) {
-      setMessage('No access token found. Please log in.');
+      showToast('No access token found. Please log in.', 'error');
       setIsLoading(false);
       return;
     }
@@ -310,8 +319,7 @@ const ItemList = () => {
               const addedItem = await retryResponse.json();
               setItems(prevItems => [addedItem, ...prevItems]);
               setNewItem({ name: '', batch_number: '', accepted_or_rejected: '' });
-              setMessage('Medicine added successfully!');
-              setTimeout(() => setMessage(''), 3000);
+              showToast('Medicine added successfully!', 'success');
               setIsLoading(false);
               return;
             }
@@ -321,7 +329,7 @@ const ItemList = () => {
         // If refresh failed
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
-        setMessage('Session expired. Please log in again.');
+        showToast('Session expired. Please log in again.', 'error');
         setTimeout(() => window.location.href = '/login', 2000);
         setIsLoading(false);
         return;
@@ -335,14 +343,11 @@ const ItemList = () => {
       const addedItem = await response.json();
       setItems(prevItems => [addedItem, ...prevItems]);
       setNewItem({ name: '', batch_number: '', accepted_or_rejected: '' });
-      setMessage('Medicine added successfully!');
+      showToast('Medicine added successfully!', 'success');
       console.log('Successfully added medicine');
-      
-      setTimeout(() => setMessage(''), 3000);
     } catch (error) {
       console.error('Error adding medicine:', error);
-      setMessage(`Error adding medicine: ${error.message}`);
-      setTimeout(() => setMessage(''), 3000);
+      showToast(`Error adding medicine: ${error.message}`, 'error');
     } finally {
       setIsLoading(false);
     }
@@ -354,15 +359,68 @@ const ItemList = () => {
 
   // Function to clear localStorage (for demo purposes only)
   const clearLocalStorage = () => {
-    if (window.confirm('Clear local storage? This will only affect demo data, not your database.')) {
-      localStorage.removeItem('medicineItems');
-      setMessage('Local storage cleared. Reload to fetch from database.');
-      setTimeout(() => setMessage(''), 3000);
-    }
+    localStorage.removeItem('medicineItems');
+    showToast('Demo data cleared. Reload page to fetch from database.', 'success');
   };
 
   return (
     <div className="medicine-container">
+      {/* Toast Notifications Container */}
+      <div className="toast-container">
+        {toasts.map(toast => (
+          <div key={toast.id} className={`toast toast-${toast.type}`}>
+            <div className="toast-content">
+              <span className="toast-icon">
+                {toast.type === 'success' && '✅'}
+                {toast.type === 'error' && '❌'}
+                {toast.type === 'warning' && '⚠️'}
+                {toast.type === 'info' && 'ℹ️'}
+              </span>
+              <span className="toast-message">{toast.message}</span>
+            </div>
+            <button 
+              className="toast-close" 
+              onClick={() => removeToast(toast.id)}
+              aria-label="Close notification"
+            >
+              ×
+            </button>
+          </div>
+        ))}
+      </div>
+      
+      {/* Back to Dashboard Button */}
+      <button 
+        onClick={() => navigate('/dashboard')} 
+        className="back-to-dashboard-btn"
+        style={{
+          background: 'linear-gradient(135deg, #667eea, #764ba2)',
+          color: 'white',
+          border: 'none',
+          padding: '12px 24px',
+          borderRadius: '10px',
+          fontSize: '1rem',
+          fontWeight: '600',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          marginBottom: '20px',
+          transition: 'all 0.3s ease',
+          boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)'
+        }}
+        onMouseOver={(e) => {
+          e.currentTarget.style.transform = 'translateY(-2px)';
+          e.currentTarget.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.4)';
+        }}
+        onMouseOut={(e) => {
+          e.currentTarget.style.transform = 'translateY(0)';
+          e.currentTarget.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.3)';
+        }}
+      >
+        <span>←</span> Back to Dashboard
+      </button>
+      
       {/* Enhanced header with gradient background */}
       <div className="medicine-header">
         <h1 className="medicine-title">
@@ -426,12 +484,6 @@ const ItemList = () => {
                 </button>
               </div>
             </div>
-            
-            {uploadProgress && (
-              <div className={`upload-progress-message ${uploadProgress.includes('❌') ? 'error' : 'success'}`}>
-                {uploadProgress}
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -521,16 +573,6 @@ const ItemList = () => {
             )}
           </button>
         </form>
-
-        {/* Enhanced message display */}
-        {message && (
-          <div className={`message-banner ${message.includes('Error') ? 'error' : 'success'}`}>
-            <span className="message-icon">
-              {message.includes('Error') ? '❌' : '✅'}
-            </span>
-            {message}
-          </div>
-        )}
       </div>
 
       {/* Summary Cards Section */}
