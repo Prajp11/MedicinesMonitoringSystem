@@ -8,7 +8,6 @@ const Login = ({ setLoggedIn }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showHint, setShowHint] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
 
@@ -78,24 +77,6 @@ const Login = ({ setLoggedIn }) => {
               </p>
             </div>
 
-            <div className="login-help">
-              <button 
-                type="button"
-                className="hint-button"
-                onClick={() => setShowHint(!showHint)}
-              >
-                💡 {showHint ? 'Hide' : 'Show'} Demo Credentials
-              </button>
-              
-              {showHint && (
-                <div className="demo-credentials">
-                  <strong>Demo Credentials:</strong><br />
-                  Username: Prajwalp11<br />
-                  Password: Prajwal@123
-                </div>
-              )}
-            </div>
-
             {error && (
               <div className="error-message">
                 <span className="error-icon">⚠️</span>
@@ -107,7 +88,6 @@ const Login = ({ setLoggedIn }) => {
               <div className="form-group">
                 <label className="form-label" htmlFor="username">Username</label>
                 <div className="input-container">
-                  <span className="input-icon">👤</span>
                   <input
                     id="username"
                     type="text"
@@ -124,7 +104,6 @@ const Login = ({ setLoggedIn }) => {
               <div className="form-group">
                 <label className="form-label" htmlFor="password">Password</label>
                 <div className="input-container">
-                  <span className="input-icon">🔒</span>
                   <input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
